@@ -59,12 +59,26 @@ public class ServerThread extends Thread{
 			  case "mover":
 				  manejarJugadorMovimiento(parts);
 				  break;
+			  case "disparo":
+				  manejarDisparosJugador(parts);
+				  break;
 			  case "recargar":
 				  GameData.networkListener.recargar(Integer.parseInt(parts[1]));
 				  break;
 			  }
 		  }
 	  }
+	  private void manejarDisparosJugador(String[] parts) {
+		  switch(parts[1]) {
+		  case "disparar":
+			  GameData.networkListener.disparar(Integer.parseInt(parts[2]),  Integer.parseInt(parts[3]), Integer.parseInt(parts[4]));
+			  break;
+		  case "dispararrelease":
+			  GameData.networkListener.dispararRelease(Integer.parseInt(parts[2]));
+			  break;
+		  }
+	  }
+
 	  private void manejarJugadorMovimiento(String[] parts) {
 		  switch(parts[1]) {
 		  case "arriba":
@@ -91,63 +105,66 @@ public class ServerThread extends Thread{
 		  case "derecharelease":
 			  GameData.networkListener.moverJugadorDerechaRelease(Integer.parseInt(parts[2]));
 			  break;
+		  case "direccion":
+			  GameData.networkListener.actualizarDireccionJugador(Integer.parseInt(parts[2]), parts[3]);
+			  break;
 		  }
-	}
+	  }
 
-	private boolean conectarCliente(DatagramPacket packet) {
-	        if(clientesConectados < MAX_CLIENTES){
-	            if(!clienteExiste(packet.getAddress(), packet.getPort())){
-	            	añadirCliente(packet);
-	            	enviarMensajeAlCliente("connection" + specialChar + "successful" + specialChar + (clientesConectados-1),  packet.getAddress(), packet.getPort());
-	                return true;
-	            } else {
-	                // EL CLIENTE YA EXISTE
-	            }
-	        } else {
-	            //PODRIA MANDARLE UN MENSAJE AL CLIENTE DICIENDO QUE SE RECHAZO LA CONEXION PQ EL SERVER ESTA LLENO
-	        }
-	        return false;
+	  private boolean conectarCliente(DatagramPacket packet) {
+		  if(clientesConectados < MAX_CLIENTES){
+			  if(!clienteExiste(packet.getAddress(), packet.getPort())){
+				  añadirCliente(packet);
+				  enviarMensajeAlCliente("connection" + specialChar + "successful" + specialChar + (clientesConectados-1),  packet.getAddress(), packet.getPort());
+				  return true;
+			  } else {
+				  // EL CLIENTE YA EXISTE
+			  }
+		  } else {
+			  //PODRIA MANDARLE UN MENSAJE AL CLIENTE DICIENDO QUE SE RECHAZO LA CONEXION PQ EL SERVER ESTA LLENO
+		  }
+		  return false;
 	  }
 	  private boolean clienteExiste(InetAddress address, int port) {
-	        for (int i = 0; i < clientesConectados; i++) {
-	            if(clientes[i].getIp().equals(address) && clientes[i].getPort() == port){
-	                return true;
-	            }
-	        }
-	        return false;
-	    }
+		  for (int i = 0; i < clientesConectados; i++) {
+			  if(clientes[i].getIp().equals(address) && clientes[i].getPort() == port){
+				  return true;
+			  }
+		  }
+		  return false;
+	  }
 	  private void añadirCliente(DatagramPacket packet) {
-	        clientes[clientesConectados] = new Cliente(packet.getAddress(), packet.getPort(), clientesConectados);
-	        clientesConectados++;
-	        System.out.println("SERVIDOR: Cliente conectado");
-	    }
+		  clientes[clientesConectados] = new Cliente(packet.getAddress(), packet.getPort(), clientesConectados);
+		  clientesConectados++;
+		  System.out.println("SERVIDOR: Cliente conectado");
+	  }
 
-	    public void enviarMensajeAlCliente(String msg, InetAddress ip, int port){
-	        byte[] data = msg.getBytes();
-	        DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
-	        try {
-	            socket.send(packet);
-//	            System.out.println("SERVIDOR: Mensaje enviado: " + msg);
-	        } catch (IOException e) {
-	        }
-	    }
+	  public void enviarMensajeAlCliente(String msg, InetAddress ip, int port){
+		  byte[] data = msg.getBytes();
+		  DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
+		  try {
+			  socket.send(packet);
+//	  	          System.out.println("SERVIDOR: Mensaje enviado: " + msg);
+		  } catch (IOException e) {
+		  }
+	  }
 
-	    public void enviarMensajeATodos(String msg){
-	        if(clientesConectados == 0){
-	            return;
-	        }
-	        for (int i = 0; i < clientesConectados; i++) {
-	        	enviarMensajeAlCliente(msg, clientes[i].getIp(), clientes[i].getPort());
-	        }
-	    }
+	  public void enviarMensajeATodos(String msg){
+		  if(clientesConectados == 0){
+			  return;
+		  }
+		  for (int i = 0; i < clientesConectados; i++) {
+			  enviarMensajeAlCliente(msg, clientes[i].getIp(), clientes[i].getPort());
+		  }
+	  }
+	  	
+	  public void limpiarClientes() {
+		  clientes = new Cliente[MAX_CLIENTES];
+		  clientesConectados = 0;
+	  }
 
-	    public void limpiarClientes() {
-	        clientes = new Cliente[MAX_CLIENTES];
-	        clientesConectados = 0;
-	    }
-
-	    public void end(){
-	        this.end = true;
-	        this.socket.close();
-	    }
+	  public void end(){
+		  this.end = true;
+		  this.socket.close();
+	  }
 }

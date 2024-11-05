@@ -1,6 +1,5 @@
 package com.intothebullethell.game.objects.armas;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
@@ -91,4 +90,7 @@ public abstract class Arma {
 	public Texture getArmaTextura() {
         return armaTextura;
     }
+	public String getTipoProyectil() {
+		return null;
+	}
 }

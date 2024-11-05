@@ -17,7 +17,7 @@ import com.intothebullethell.game.entidades.EnemigoNormal;
 import com.intothebullethell.game.entidades.EnemigoRapido;
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.globales.NetworkData;
-import com.intothebullethell.game.managers.ProyectilManager;
+import com.intothebullethell.game.managers.EntidadManager;
 import com.intothebullethell.game.managers.TileColisionManager;
 
 public class GenerarEnemigos {
@@ -29,17 +29,18 @@ public class GenerarEnemigos {
     private Jugador[] jugadores; 
     private TileColisionManager tileCollisionManager;
     private Random random;
-    private ProyectilManager proyectilManager;
+    private EntidadManager entidadManager;
+    
     private int numeroDeEnemigos = 10;
 
-    public GenerarEnemigos(OrthographicCamera camara, TiledMap map, List<Enemigo> enemigos, Jugador[] jugadores, TileColisionManager tileCollisionManager, ProyectilManager proyectilManager) {
+    public GenerarEnemigos(OrthographicCamera camara, TiledMap map, List<Enemigo> enemigos, Jugador[] jugadores, TileColisionManager tileCollisionManager, EntidadManager entidadManager) {
         this.camara = camara;
         this.map = map;
         this.enemigos = enemigos;
         this.occupiedPositions = new HashSet<>();
         this.jugadores = jugadores;
         this.tileCollisionManager = tileCollisionManager;
-        this.proyectilManager = proyectilManager;
+        this.entidadManager = entidadManager;
         this.listaEnemigos = new ArrayList<>();
         this.random = new Random();
     }
@@ -55,7 +56,7 @@ public class GenerarEnemigos {
             enemigo.setPosition(spawnPosition.x, spawnPosition.y);
             enemigo.updateBoundingBox();
             enemigos.add(enemigo);
-            NetworkData.serverThread.enviarMensajeATodos("enemigo!crear!" + enemigo.getX() + "!" + enemigo.getY());
+            NetworkData.serverThread.enviarMensajeATodos("enemigo!crear!" + enemigo.getTipoEnemigo() +"!" + enemigo.getX() + "!" + enemigo.getY());
         }
         sumarNumeroDeEnemigos();
     }
@@ -113,8 +114,8 @@ public class GenerarEnemigos {
         return numeroDeEnemigos;
     }
     private void inicializarListaEnemigos() {
-    	 listaEnemigos.add(new EnemigoNormal(jugadores, enemigos, proyectilManager));
-         listaEnemigos.add(new EnemigoRapido(jugadores, enemigos, proyectilManager));
-         listaEnemigos.add(new EnemigoFuerte(jugadores, enemigos, proyectilManager));
+    	 listaEnemigos.add(new EnemigoNormal(jugadores, enemigos, entidadManager));
+         listaEnemigos.add(new EnemigoRapido(jugadores, enemigos, entidadManager));
+         listaEnemigos.add(new EnemigoFuerte(jugadores, enemigos, entidadManager));
     }
 }

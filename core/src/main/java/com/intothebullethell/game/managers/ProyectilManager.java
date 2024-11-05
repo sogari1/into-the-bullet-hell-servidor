@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.intothebullethell.game.entidades.Enemigo;
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.entidades.Proyectil;
+import com.intothebullethell.game.globales.NetworkData;
 import com.intothebullethell.game.objects.armas.Arma;
 
 import java.util.ArrayList;
@@ -19,14 +20,21 @@ public class ProyectilManager {
         proyectiles.add(proyectil);
     }
 
-    public void actualizarProyectiles(float delta, List<Enemigo> enemigos, Jugador[] jugadores) {
-        for (int i = proyectiles.size() - 1; i >= 0; i--) {
-            Proyectil proyectil = proyectiles.get(i);
+    public void update(float delta, List<Enemigo> enemigos, Jugador[] jugadores) {
+    	int proyectilId = 0;
+    	List<Integer> proyectilesAEliminar  = new ArrayList<>();
+    	
+        for (Proyectil proyectil : proyectiles) {
             proyectil.update(delta);
-
+            NetworkData.serverThread.enviarMensajeATodos("proyectil!mover!" + proyectilId + "!" + proyectil.getX() + "!" + proyectil.getY());
             if (chequearColisionProyectil(proyectil, enemigos, jugadores) || tileColisionManager.esColision(proyectil.getBoundingRectangle())) {
-                proyectiles.remove(i);
+            	proyectilesAEliminar.add(proyectilId); 
             }
+            proyectilId++;
+        }
+        for (int i = proyectilesAEliminar.size() - 1; i >= 0; i--) {
+            int index = proyectilesAEliminar.get(i);
+            removerProyectil(index);
         }
     }
     public void actualizarProyectilPosicion(int proyectilId, float x, float y) {
@@ -52,20 +60,23 @@ public class ProyectilManager {
         return false;
     }
 
-    public void dispararProyectil(OrthographicCamera camara, Arma arma, float jugadorX, float jugadorY, int screenX, int screenY) {
+    public void dispararProyectil(OrthographicCamera camara, Arma arma, float jugadorX, float jugadorY, int worldX, int worldY) {
         if (arma.puedeDisparar()) {
-            Vector3 unprojected = camara.unproject(new Vector3(screenX, screenY, 0));
-            Vector2 target = new Vector2(unprojected.x, unprojected.y);
+            Vector2 target = new Vector2(worldX, worldY);
             Vector2 position = new Vector2(jugadorX, jugadorY);
 
             arma.disparar(position, target, proyectiles);
-
             if (!arma.esMunicionInfinita()) {
                 arma.dispararProyectil(position, target, proyectiles);
             }
         }
     }
-    
+    private void removerProyectil(int index) {
+        if (index >= 0 && index < proyectiles.size()) {
+            proyectiles.remove(index);
+            NetworkData.serverThread.enviarMensajeATodos("proyectil!remover!" + index);
+        } 
+    }
     public void draw() {
         for (Proyectil proyectil : proyectiles) {
             proyectil.draw(RenderManager.batchRender);

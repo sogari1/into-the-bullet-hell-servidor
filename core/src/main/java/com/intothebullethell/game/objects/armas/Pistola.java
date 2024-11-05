@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
 import com.intothebullethell.game.entidades.Proyectil;
+import com.intothebullethell.game.globales.NetworkData;
 import com.intothebullethell.game.globales.RecursoRuta;
 import com.intothebullethell.game.globales.SonidoRuta;
 
@@ -15,5 +16,6 @@ public class Pistola extends Arma {
     @Override
     public void disparar(Vector2 position, Vector2 target, List<Proyectil> proyectiles) {
         proyectiles.add(new Proyectil(proyectilTextura, position, target, proyectilVelocidad, daño, true));
+        NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" + getNombre() + "!" + position.x + "!" + position.y + "!" + proyectilVelocidad + "!" + daño + "!" + "true");
     }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
+import com.intothebullethell.game.managers.EntidadManager;
 import com.intothebullethell.game.managers.ProyectilManager;
 
 public abstract class Enemigo extends Entidad {
@@ -12,19 +13,19 @@ public abstract class Enemigo extends Entidad {
     protected float tiempoAtaque;
     protected Jugador[] jugadores;
     protected List<Enemigo> enemigos;
-    protected float projectilVelocidad;
+    protected float proyectilVelocidad;
     protected int daño;
-    protected ProyectilManager proyectilManager;
+    protected EntidadManager entidadManager;
 
-    public Enemigo(Texture texture, int vida, int velocidad, float intervaloAtaque, int daño, float projectilVelocidad, Texture projectilTextura, Jugador[] jugadores, List<Enemigo> enemigos, ProyectilManager proyectilManager) {
-        super(texture, vida, velocidad, projectilTextura);
+    public Enemigo(Texture texture, int vida, int velocidad, float intervaloAtaque, int daño, float proyectilVelocidad, Texture proyectilTextura, Jugador[] jugadores, List<Enemigo> enemigos, EntidadManager entidadManager) {
+        super(texture, vida, velocidad, proyectilTextura);
         this.jugadores = jugadores;
         this.enemigos = enemigos;
         this.intervaloAtaque = intervaloAtaque;
         this.tiempoAtaque = intervaloAtaque;
         this.daño = daño;
-        this.projectilVelocidad = projectilVelocidad;
-        this.proyectilManager = proyectilManager; 
+        this.proyectilVelocidad = proyectilVelocidad;
+        this.entidadManager = entidadManager; 
     }
 
     @Override
@@ -84,4 +85,8 @@ public abstract class Enemigo extends Entidad {
     	}
     	return false;
     }
+    public abstract String getTipoEnemigo();
+	public String getTipoProyectil() {
+		return "Escopeta";
+	}
 }

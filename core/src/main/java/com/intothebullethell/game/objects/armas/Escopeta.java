@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
 import com.intothebullethell.game.entidades.Proyectil;
+import com.intothebullethell.game.globales.NetworkData;
 import com.intothebullethell.game.globales.RecursoRuta;
 import com.intothebullethell.game.globales.SonidoRuta;
 
@@ -21,7 +22,7 @@ public class Escopeta extends Arma {
             Vector2 spreadTarget = new Vector2(position).add(spreadDirection.scl(1000));
             
             proyectiles.add(new Proyectil(proyectilTextura, position, spreadTarget, proyectilVelocidad, daño, true));
+            NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" + getNombre() + "!" + position.x + "!" + position.y + "!" + proyectilVelocidad + "!" + daño + "!" + "true");
         }
     }
-
 }

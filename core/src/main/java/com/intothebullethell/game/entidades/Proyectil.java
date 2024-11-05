@@ -47,4 +47,5 @@ public class Proyectil extends Sprite {
     public void draw(Batch batch) {
         super.draw(batch);
     }
+    	
 }

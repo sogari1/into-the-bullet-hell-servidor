@@ -14,7 +14,9 @@ public interface NetworkActionsListener {
 	void moverJugadorIzquierdaRelease(int jugadorId);
 	void moverJugadorDerechaRelease(int jugadorId);
 	
-	void disparar(int jugadorId);
+	void actualizarDireccionJugador(int jugadorId, String region);
+	
+	void disparar(int jugadorId, int mouseX, int mouseY);
 	void dispararRelease(int jugadorId);
 	void recargar(int jugadorId);
 }

@@ -12,7 +12,7 @@ import com.intothebullethell.game.globales.GameData;
 import com.intothebullethell.game.globales.JuegoEstado;
 import com.intothebullethell.game.globales.NetworkData;
 import com.intothebullethell.game.inputs.InputManager;
-import com.intothebullethell.game.managers.MapManager;
+import com.intothebullethell.game.managers.EntidadManager;
 import com.intothebullethell.game.managers.ProyectilManager;
 import com.intothebullethell.game.mecanicas.ArmaAleatoria;
 import com.intothebullethell.game.objects.armas.Arma;
@@ -26,8 +26,7 @@ public class Jugador extends Entidad {
     private TextureRegion upSprite, downSprite, leftSprite, rightSprite;
     private Hud hud;
     private InputManager inputManager;
-    private ProyectilManager proyectilManager;
-    private MapManager mapManager;
+    private EntidadManager entidadManager;
     
     private float shootTimer = 0;
     private float opacidad = 1.0f;
@@ -35,10 +34,11 @@ public class Jugador extends Entidad {
     private final float escudoCoolDownMaximo = 2.5f; 
     private int vidaActual;
     private boolean disparando = false;
+    private int mouseX, mouseY;
     
     private int numeroJugador;
 
-    public Jugador(int numeroJugador, TextureRegion sprite, TextureRegion upSprite, TextureRegion downSprite, TextureRegion leftSprite, TextureRegion rightSprite, OrthographicCamera camara, InputManager inputManager, MapManager mapManager, ProyectilManager proyectilManager) {
+    public Jugador(int numeroJugador, TextureRegion sprite, TextureRegion upSprite, TextureRegion downSprite, TextureRegion leftSprite, TextureRegion rightSprite, OrthographicCamera camara, InputManager inputManager, EntidadManager entidadManager) {
     	super(sprite.getTexture(), 20, 100, null);
         this.upSprite = upSprite;
         this.downSprite = downSprite;
@@ -49,8 +49,7 @@ public class Jugador extends Entidad {
         this.armaEquipada = armaAleatoria.obtenerArmaAleatoria();
         this.inputManager = inputManager;
         this.inputManager.setJugador(this);
-        this.mapManager = mapManager;
-        this.proyectilManager = proyectilManager;
+        this.entidadManager = entidadManager;
         this.numeroJugador = numeroJugador;
     }
 
@@ -58,7 +57,7 @@ public class Jugador extends Entidad {
     public void draw(Batch batch) {
         update(Gdx.graphics.getDeltaTime());
         super.draw(batch); 
-        proyectilManager.draw();
+        entidadManager.grupoProyectiles.draw();
 
     }
 
@@ -75,9 +74,8 @@ public class Jugador extends Entidad {
     	 setColor(1.0f, 1.0f, 1.0f, opacidad); 
     	 actualizarMovimiento();
          manejarDisparos(delta);
-         actualizarSprite();
          actualizarCamara();
-         proyectilManager.actualizarProyectiles(delta, mapManager.getgrupoEnemigos().getEntidades(), jugadores);
+         entidadManager.grupoProyectiles.update(delta, entidadManager.getgrupoEnemigos().getEntidades(), jugadores);
     }
 
     private void actualizarMovimiento() {
@@ -86,7 +84,23 @@ public class Jugador extends Entidad {
         	NetworkData.serverThread.enviarMensajeATodos("jugador!mover!" + this.numeroJugador + "!" + getX() + "!" + getY());
         }
     }
-    
+    public void actualizarDireccion(String region) {
+    	switch(region) {
+    	case "arriba":
+    		setRegion(upSprite);
+    		break;
+    	case "abajo":
+    		setRegion(downSprite);
+    		break;
+    	case "izquierda":
+    		setRegion(leftSprite);
+    		break;
+    	case "derecha":
+    		setRegion(rightSprite);
+    		break;
+    	}
+    	NetworkData.serverThread.enviarMensajeATodos("jugador!direccion!" + this.numeroJugador + "!" + region);
+    }
     public void moverArriba() {
         velocity.y = velocidad;
     }
@@ -102,35 +116,31 @@ public class Jugador extends Entidad {
     public void moverDerecha() {
         velocity.x = velocidad;
     }
-    public void detenerMovimientoArriba() {
+    public void moverArribaRelease() {
         if (velocity.y > 0) { 
             velocity.y = 0;
         }
     }
-
-    public void detenerMovimientoAbajo() {
+    public void moverAbajoRelease() {
         if (velocity.y < 0) { 
             velocity.y = 0;
         }
     }
-
-    public void detenerMovimientoIzquierda() {
+    public void moverIzquierdaRelease() {
         if (velocity.x < 0) {
             velocity.x = 0;
         }
     }
-
-    public void detenerMovimientoDerecha() {
+    public void moverDerechaRelease() {
         if (velocity.x > 0) { 
             velocity.x = 0;
         }
     }
-
     private void manejarDisparos(float delta) {
-        if (disparando) {
+        if (isDisparando() && GameData.juegoEstado.equals(JuegoEstado.JUGANDO)) {
             shootTimer -= delta;
             if (shootTimer <= 0) {
-            	proyectilManager.dispararProyectil(camara, armaEquipada, getX() + getWidth() / 2, getY() + getHeight() / 2, Gdx.input.getX(), Gdx.input.getY());
+            	entidadManager.grupoProyectiles.dispararProyectil(camara, armaEquipada, getX() + getWidth() / 2, getY() + getHeight() / 2, mouseX, mouseY);
                 shootTimer = armaEquipada.getRatioFuego(); 
             }
         }
@@ -138,28 +148,6 @@ public class Jugador extends Entidad {
     private void actualizarCamara() {
         camara.position.set(getX() + getWidth() / 2, getY() + getHeight() / 2, 0);
         camara.update();
-    }
-
-    private void actualizarSprite() {
-        Vector2 jugadorCentro = new Vector2(getX() + getWidth() / 2, getY() + getHeight() / 2);
-        Vector3 mouseWorldPos3 = camara.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        Vector2 mouseWorldPos = new Vector2(mouseWorldPos3.x, mouseWorldPos3.y);
-        Vector2 direction = mouseWorldPos.sub(jugadorCentro).nor();
-        float angulo = direction.angleDeg();
-
-        if (angulo >= 45 && angulo < 135) {
-            setRegion(upSprite);  // Arriba
-        } else if (angulo >= 135 && angulo < 225) {
-            setRegion(leftSprite);  // Izquierda
-        } else if (angulo >= 225 && angulo < 315) {
-            setRegion(downSprite);  // Abajo
-        } else {
-            setRegion(rightSprite);  // Derecha
-        }
-    }
-    public void setMousePosition(int screenX, int screenY) {
-        mousePosition.set(screenX, screenY);
-        mousePosition = mousePosition.scl(1, -1).add(0, Gdx.graphics.getHeight());
     }
     public void recargarArma() {
     	armaEquipada.reload();
@@ -216,4 +204,10 @@ public class Jugador extends Entidad {
     public Texture getArmaTextura() {
     	return armaEquipada.getArmaTextura();
     }
+    public void setMouseX(int mouseX) {
+		this.mouseX = mouseX;
+	}
+    public void setMouseY(int mouseY) {
+		this.mouseY = mouseY;
+	}
 }

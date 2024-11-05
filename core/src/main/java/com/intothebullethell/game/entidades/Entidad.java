@@ -12,15 +12,15 @@ public abstract class Entidad extends Sprite {
 	private TileColisionManager tileCollisionManager = new TileColisionManager();
     protected int vidaMaxima;
     protected float velocidad;
-    protected Texture projectilTextura;
+    protected Texture proyectilTextura;
     protected Rectangle boundingBox = new Rectangle(getX(), getY(), getWidth(), getHeight());
     protected Vector2 velocity = new Vector2(); 
 
-    public Entidad(Texture texture, int vidaMaxima, int velocidad, Texture projectilTextura) {
+    public Entidad(Texture texture, int vidaMaxima, int velocidad, Texture proyectilTextura) {
         super(texture);
         this.vidaMaxima = vidaMaxima;
         this.velocidad = velocidad;
-        this.projectilTextura = projectilTextura;
+        this.proyectilTextura = proyectilTextura;
     }
 
     public void mover(Vector2 velocity) {
@@ -59,12 +59,8 @@ public abstract class Entidad extends Sprite {
         this.velocidad = velocidad;
     }
 
-    public Texture getProjectilTextura() {
-        return projectilTextura;
-    }
-
-    public void setProjectilTextura(Texture projectilTextura) {
-        this.projectilTextura = projectilTextura;
+    public Texture getProyectilTextura() {
+        return proyectilTextura;
     }
 
     public void recibirDaño(int daño) {}

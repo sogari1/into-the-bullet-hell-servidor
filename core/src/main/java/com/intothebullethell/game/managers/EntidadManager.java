@@ -5,16 +5,16 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.mecanicas.GenerarEnemigos;
 
-public class MapManager {
+public class EntidadManager {
 
 	private EnemigoManager grupoEnemigos;
-	private ProyectilManager grupoProyectiles;
+	public ProyectilManager grupoProyectiles;
 	
 	private GenerarEnemigos generadorEnemigos;
 	
-	public MapManager(OrthographicCamera camara, TiledMap map, Jugador[] jugadores, TileColisionManager tileCollisionManager, ProyectilManager proyectilManager) {
+	public EntidadManager(OrthographicCamera camara, TiledMap map, Jugador[] jugadores, TileColisionManager tileCollisionManager) {
 		crearGrupo();
-		this.generadorEnemigos = new GenerarEnemigos(camara, RenderManager.mapa, grupoEnemigos.getEntidades(), jugadores, tileCollisionManager, proyectilManager);
+		this.generadorEnemigos = new GenerarEnemigos(camara, RenderManager.mapa, grupoEnemigos.getEntidades(), jugadores, tileCollisionManager, this);
 	}
 	private void crearGrupo() {
 		this.grupoEnemigos = new EnemigoManager();
@@ -22,10 +22,10 @@ public class MapManager {
 	}
 	public void update(float delta, Jugador[] jugadores) {
 		if (grupoEnemigos.getEntidades().isEmpty()) {
-//	        generadorEnemigos.generarEnemigos();
+	        generadorEnemigos.generarEnemigos();
 	    }
 		grupoEnemigos.update(delta);
-		grupoProyectiles.actualizarProyectiles(delta, grupoEnemigos.getEntidades(), jugadores);
+		grupoProyectiles.update(delta, grupoEnemigos.getEntidades(), jugadores);
 	}
 	public void draw() {
 		grupoEnemigos.draw();

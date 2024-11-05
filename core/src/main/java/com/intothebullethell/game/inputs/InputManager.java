@@ -106,7 +106,6 @@ public class InputManager implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
-        jugador.setMousePosition(screenX, screenY);
         return true;
     }
 
