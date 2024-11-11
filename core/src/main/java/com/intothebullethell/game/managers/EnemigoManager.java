@@ -1,6 +1,8 @@
 package com.intothebullethell.game.managers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import com.intothebullethell.game.entidades.Enemigo;
@@ -8,48 +10,56 @@ import com.intothebullethell.game.globales.NetworkData;
 public class EnemigoManager {
 
     private List<Enemigo> enemigos = new ArrayList<>();
+    private List<Integer> enemigosAEliminar     = new ArrayList<>();
     
-    public void añadirEntidad(Enemigo entidad) {
-        enemigos.add(entidad);
+    public void añadirEntidad(Enemigo enemigo) {
+        enemigos.add(enemigo);
     }
 
     public void update(float delta) {
-        List<Enemigo> enemigosAEliminar = new ArrayList<>();
+        Iterator<Enemigo> iterator = enemigos.iterator();
+        int i = 0;
         
-        for (Enemigo enemigo : enemigos) {
-            enemigo.update(delta); 
-            int enemigoId = enemigos.indexOf(enemigo);
-            NetworkData.serverThread.enviarMensajeATodos("enemigo!mover!" + enemigoId + "!" + enemigo.getX() + "!" + enemigo.getY());
+        while (iterator.hasNext()) {
+            Enemigo enemigo = iterator.next();
+            enemigo.update(delta);
+            NetworkData.serverThread.enviarMensajeATodos("enemigo!mover!" + i + "!" + enemigo.getX() + "!" + enemigo.getY());
 
-            if (enemigo.estaMuerto()) {
-                enemigosAEliminar.add(enemigo);
+            if (enemigo.isMuerto()) {
+                enemigosAEliminar.add(i); 
+            }
+            i++;
+        }
+
+        eliminarEnemigos();
+    }
+
+    private void eliminarEnemigos() {
+        
+        Collections.sort(enemigosAEliminar, Collections.reverseOrder());
+        
+        for (Integer index : enemigosAEliminar) {
+            if (index >= 0 && index < enemigos.size()) {
+                enemigos.remove((int)index);
+                NetworkData.serverThread.enviarMensajeATodos("enemigo!remover!" + index);
             }
         }
 
-        // Eliminamos los enemigos muertos
-        for (Enemigo enemigo : enemigosAEliminar) {
-            int enemigoId = enemigos.indexOf(enemigo);
-            removerEnemigo(enemigoId);
-        }
+        enemigosAEliminar.clear();
     }
-
+    
     public void draw() {
         for (Enemigo enemigo : enemigos) {
             enemigo.draw(RenderManager.batchRender);
         }
     }
-
-    private void removerEnemigo(int index) {
-        if (index >= 0 && index < enemigos.size()) {
-            enemigos.remove(index);
-            NetworkData.serverThread.enviarMensajeATodos("enemigo!remover!" + index);
-        }
-    }
-
     public List<Enemigo> getEntidades() {
         return enemigos;
     }
 
+    public int getCantidad() {
+        return enemigos.size();
+    }
     public void reset(){
         enemigos.clear();
     }

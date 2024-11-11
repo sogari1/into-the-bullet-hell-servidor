@@ -14,20 +14,6 @@ public abstract class RenderManager {
 	public static OrthogonalTiledMapRenderer render = new OrthogonalTiledMapRenderer(mapa);;
 	public static SpriteBatch batchRender = (SpriteBatch) RenderManager.render.getBatch();
 	
-    public static void begin(){
-        batch.begin();
-        batchRender.begin();
-    }
-
-    public static void end(){
-        batch.end();
-        batchRender.end();
-    }
-
-    public static void dispose() {
-        batch.dispose();
-        batchRender.dispose();
-    }
     public static void renderizarCamara(OrthographicCamera camara) {
     	render.setView(camara);
     	render.render();

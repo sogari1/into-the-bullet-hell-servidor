@@ -2,7 +2,6 @@ package com.intothebullethell.game.managers;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.intothebullethell.game.entidades.Enemigo;
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.entidades.Proyectil;

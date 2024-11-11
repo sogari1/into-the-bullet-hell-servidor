@@ -10,7 +10,7 @@ import com.intothebullethell.game.managers.TileColisionManager;
 
 public abstract class Entidad extends Sprite {
 	private TileColisionManager tileCollisionManager = new TileColisionManager();
-    protected int vidaMaxima;
+    protected int vidaMaxima, vidaActual;
     protected float velocidad;
     protected Texture proyectilTextura;
     protected Rectangle boundingBox = new Rectangle(getX(), getY(), getWidth(), getHeight());
@@ -19,6 +19,7 @@ public abstract class Entidad extends Sprite {
     public Entidad(Texture texture, int vidaMaxima, int velocidad, Texture proyectilTextura) {
         super(texture);
         this.vidaMaxima = vidaMaxima;
+        this.vidaActual = vidaMaxima;
         this.velocidad = velocidad;
         this.proyectilTextura = proyectilTextura;
     }
@@ -46,17 +47,11 @@ public abstract class Entidad extends Sprite {
     public int getVidaMaxima() {
         return vidaMaxima;
     }
-
-    public void setVida(int vidaMaxima) {
-        this.vidaMaxima = vidaMaxima;
-    }
-
+	public int getVidaActual() {
+		return vidaActual;
+	}
     public float getVelocidad() {
         return velocidad;
-    }
-
-    public void setVelocidad(float velocidad) {
-        this.velocidad = velocidad;
     }
 
     public Texture getProyectilTextura() {

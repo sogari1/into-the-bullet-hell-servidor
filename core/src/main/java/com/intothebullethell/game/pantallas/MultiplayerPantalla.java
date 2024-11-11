@@ -15,7 +15,6 @@ import com.intothebullethell.game.globales.NetworkData;
 import com.intothebullethell.game.globales.RecursoRuta;
 import com.intothebullethell.game.inputs.InputManager;
 import com.intothebullethell.game.managers.EntidadManager;
-import com.intothebullethell.game.managers.ProyectilManager;
 import com.intothebullethell.game.managers.RenderManager;
 import com.intothebullethell.game.managers.TileColisionManager;
 import com.intothebullethell.game.mecanicas.Tiempo;
@@ -27,7 +26,6 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 
 	private final int NUM_JUGADORES = 2;
 	private Jugador[] jugadores = new Jugador[NUM_JUGADORES];
-	private Hud[] huds = new Hud[NUM_JUGADORES]; 
 
 	private EntidadManager entidadManager;
     private OrthographicCamera camara;
@@ -36,27 +34,26 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
     private Tiempo tiempo;
     private InputManager inputManager;
     private TileColisionManager tileCollisionManager;
+    private Hud hud;
     
-    private boolean pausado = false;
-    private int ronda = 1;
+    private int ronda = 0;
     
     public MultiplayerPantalla(IntoTheBulletHell game) {
     	GameData.networkListener = this;
     	NetworkData.serverThread = new ServerThread();
     	NetworkData.serverThread.start();
+    	
         this.game = game;
         this.tileCollisionManager = new TileColisionManager();
         this.camara = new OrthographicCamera();
         this.inputManager = new InputManager();
-        this.entidadManager = new EntidadManager(camara, RenderManager.mapa, jugadores, tileCollisionManager);
+        this.entidadManager = new EntidadManager(camara, RenderManager.mapa, jugadores, tileCollisionManager, this);
     	Gdx.input.setInputProcessor(inputManager);
            
         
         crearJugadores();  
-        crearHudJugadores();
-        
+        this.hud = new Hud(RenderManager.batchRender);
         this.tiempo = new Tiempo(jugadores);
-        
         this.stage = new Stage(new ScreenViewport());
         
     }
@@ -65,12 +62,6 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 			jugadores[i] = new Jugador(i, RecursoRuta.SPRITE_ABAJO, RecursoRuta.SPRITE_ARRIBA,  RecursoRuta.SPRITE_ABAJO, RecursoRuta.SPRITE_IZQUIERDA,  RecursoRuta.SPRITE_DERECHA, camara, inputManager, entidadManager);
 			 this.jugadores[i].setPosition((15 + (i*2)) * tileCollisionManager.collisionLayer.getTileWidth(), 15 * tileCollisionManager.collisionLayer.getTileHeight());
 		}
-    }
-    private void crearHudJugadores() {
-        for (int i = 0; i < NUM_JUGADORES; i++) {
-            huds[i] = new Hud(RenderManager.batch, jugadores[i]);
-            jugadores[i].setHud(huds[i]);
-        }
     }
     
 	@Override
@@ -94,25 +85,17 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
     }
 	private void update(float delta) {
 		if (GameData.juegoEstado.equals(JuegoEstado.JUGANDO)) {
+			if (!tiempo.isAlive()) {
+                tiempo.start(); 
+            }
 			for (Jugador jugador : jugadores) {
 		        jugador.update(delta);
 		    }
 			entidadManager.update(delta, jugadores);
-//		    if (enemigos.isEmpty()) {
-//		        ronda++;
-//		        for (Hud hud : huds) {
-//		            hud.actualizarRonda(ronda);
-//		        }
-//		        generadorEnemigos.generarEnemigos();
-//		    }
-//
-//		    for (Hud hud : huds) {
-//		        hud.actualizarEnemigosRestantes(enemigos.size());
-//		        hud.actualizarTemporizador(Tiempo.getTiempo());
-//		    }
-//		    // Actualiza los proyectiles
-//		    proyectilManager.actualizarProyectiles(delta, enemigos, jugadores);
-//			NetworkData.serverThread.enviarMensajeATodos("tiempo!" + Tiempo.getTiempo());
+			
+			hud.actualizarTemporizador(Tiempo.getTiempo());
+			hud.actualizarEnemigosRestantes(entidadManager.grupoEnemigos.getCantidad());
+			
         }
 	}
 
@@ -124,6 +107,10 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 			}
 			entidadManager.draw();
 		RenderManager.batchRender.end();
+		
+		RenderManager.batch.begin();
+			hud.draw();
+		RenderManager.batch.end();
 		stage.draw();
 	    }
 	@Override
@@ -138,7 +125,13 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 	@Override
 	 public void dispose() {
         NetworkData.serverThread.end();
+        hud.dispose();
+        tiempo.detener();
     }
+	public void incrementarRonda() {
+		ronda++;
+		hud.actualizarRonda(ronda);
+	}
 	@Override
 	public void empezarJuego() {
 		GameData.juegoEstado = JuegoEstado.JUGANDO;
@@ -194,4 +187,5 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 	public void actualizarDireccionJugador(int jugadorId, String region) {
 		jugadores[jugadorId].actualizarDireccion(region);
 	}
+	
  }

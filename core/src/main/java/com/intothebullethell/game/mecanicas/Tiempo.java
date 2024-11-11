@@ -21,7 +21,7 @@ public class Tiempo extends Thread {
             if (!paused) { 
                 try {
                     Thread.sleep(1000);
-                    System.out.println("Aleatorizar arma en: " + tiempo + " segundos");
+//                    System.out.println("Aleatorizar arma en: " + tiempo + " segundos");
                     tiempo--;
                     if (tiempo < 0) {
                         for (Jugador jugador : jugadores) {

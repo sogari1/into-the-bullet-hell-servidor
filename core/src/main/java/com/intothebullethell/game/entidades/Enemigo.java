@@ -1,26 +1,23 @@
 package com.intothebullethell.game.entidades;
 
 
-import java.util.List;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.intothebullethell.game.managers.EntidadManager;
-import com.intothebullethell.game.managers.ProyectilManager;
 
 public abstract class Enemigo extends Entidad {
+    protected Jugador[] jugadores;
+    protected EntidadManager entidadManager;
+    
     protected float intervaloAtaque;
     protected float tiempoAtaque;
-    protected Jugador[] jugadores;
-    protected List<Enemigo> enemigos;
     protected float proyectilVelocidad;
     protected int daño;
-    protected EntidadManager entidadManager;
 
-    public Enemigo(Texture texture, int vida, int velocidad, float intervaloAtaque, int daño, float proyectilVelocidad, Texture proyectilTextura, Jugador[] jugadores, List<Enemigo> enemigos, EntidadManager entidadManager) {
+    public Enemigo(Texture texture, int vida, int velocidad, float intervaloAtaque, int daño, float proyectilVelocidad, Texture proyectilTextura, Jugador[] jugadores, EntidadManager entidadManager) {
         super(texture, vida, velocidad, proyectilTextura);
         this.jugadores = jugadores;
-        this.enemigos = enemigos;
         this.intervaloAtaque = intervaloAtaque;
         this.tiempoAtaque = intervaloAtaque;
         this.daño = daño;
@@ -66,8 +63,7 @@ public abstract class Enemigo extends Entidad {
     }
 
     @Override
-    public void atacar() {
-    }
+    public void atacar() {}
 
     @Override
     public void setPosition(float x, float y) {
@@ -77,14 +73,19 @@ public abstract class Enemigo extends Entidad {
 
     @Override
     public void recibirDaño(int daño) {
-        vidaMaxima -= daño;
+        vidaActual -= daño;
+        if(vidaActual < 0) {
+            vidaActual = 0;
+        }
     }
-    public boolean estaMuerto() {
-    	if(vidaMaxima <= 0) {
-    		return true;
-    	}
-    	return false;
+
+    public boolean isMuerto() {
+        if (vidaActual <= 0) {
+            return true;
+        }
+        return false;
     }
+
     public abstract String getTipoEnemigo();
 	public String getTipoProyectil() {
 		return "Escopeta";
