@@ -38,14 +38,14 @@ public class GenerarEnemigos {
     }
     public void generarEnemigos() {
         occupiedPositions.clear();
-        entidadManager.grupoEnemigos.reset();
-        for (int i = 0; i < numeroDeEnemigos; i++) {
+        entidadManager.getGrupoEnemigos().reset();
+        for (int i = 0; i < this.numeroDeEnemigos; i++) {
             Vector2 spawnPosition = crearSpawnUnico();
 
             Enemigo enemigo = crearEnemigoAleatorio(spawnPosition);
             enemigo.setPosition(spawnPosition.x, spawnPosition.y);
             enemigo.updateBoundingBox();
-            entidadManager.grupoEnemigos.añadirEntidad(enemigo);
+            entidadManager.getGrupoEnemigos().añadirEnemigo(enemigo);
             NetworkData.serverThread.enviarMensajeATodos("enemigo!crear!" + enemigo.getTipoEnemigo() +"!" + enemigo.getX() + "!" + enemigo.getY());
         }
         sumarNumeroDeEnemigos();
@@ -96,9 +96,12 @@ public class GenerarEnemigos {
     }
 
     private int sumarNumeroDeEnemigos() {
-        numeroDeEnemigos += 1;
-        return numeroDeEnemigos;
+        this.numeroDeEnemigos += 1;
+        return this.numeroDeEnemigos;
     }
+    public void reiniciarContador() {
+		this.numeroDeEnemigos = 10;
+	}
     private void inicializarListaEnemigos() {
     	 listaEnemigos.add(new EnemigoNormal(jugadores, entidadManager));
          listaEnemigos.add(new EnemigoRapido(jugadores, entidadManager));

@@ -2,7 +2,6 @@ package com.intothebullethell.game.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -15,8 +14,8 @@ public class Boton extends Actor {
         this.bounds = new Rectangle(texto.getX(), texto.getY() - texto.getHeight(), texto.getWidth(), texto.getHeight());
     }
 
-    public void draw(SpriteBatch batch) {
-        texto.draw(batch); 
+    public void draw() {
+        texto.draw(); 
     }
 
     public boolean isMouseOver() {

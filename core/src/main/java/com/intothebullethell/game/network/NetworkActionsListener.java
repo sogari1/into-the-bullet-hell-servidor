@@ -3,6 +3,7 @@ package com.intothebullethell.game.network;
 public interface NetworkActionsListener {
 
 	void empezarJuego();
+	void terminarJuego();
 	
 	void moverJugadorArriba(int jugadorId);
 	void moverJugadorAbajo(int jugadorId);
@@ -19,4 +20,7 @@ public interface NetworkActionsListener {
 	void disparar(int jugadorId, int mouseX, int mouseY);
 	void dispararRelease(int jugadorId);
 	void recargar(int jugadorId);
+	void usarBengala(int jugadorId);
+	
+	
 }

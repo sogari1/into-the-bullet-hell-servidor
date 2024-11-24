@@ -19,39 +19,59 @@ public class ServerThread extends Thread{
 	  private Cliente[] clientes = new Cliente[MAX_CLIENTES];
 
 	  public ServerThread() {
-		  try {
-			  socket = new DatagramSocket(PORT);
-		  } catch (SocketException e) {
-			  throw new RuntimeException(e);
-		  }
-	  }
+	        try {
+	            socket = new DatagramSocket(PORT);
+	        } catch (SocketException e) {
+	            if (e.getMessage().contains("Address already in use")) {
+	                System.err.println("Error: El puerto " + PORT + " ya está en uso. Por favor, cierra el servidor anterior o utiliza otro puerto.");
+	            } else {
+	                System.err.println("Error al inicializar el servidor: " + e.getMessage());
+	            }
+	            throw new RuntimeException("No se pudo iniciar el servidor debido a un problema con el socket.");
+	        }
+	    }
 
 	  @Override
 	  public void run() {
-		  while(!end){
+		  while (!end) {
 			  DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
 			  try {
 				  socket.receive(packet);
 				  procesarMensajeDeCliente(packet);
+			  } catch (SocketException e) {
+				  if (socket.isClosed()) {
+					  System.out.println("Servidor cerrado correctamente.");
+				  } else {
+					  throw new RuntimeException("Error inesperado en el socket: " + e.getMessage(), e);
+				  }
 			  } catch (IOException e) {
-				  throw new RuntimeException(e);
+				  System.err.println("Error al recibir paquete: " + e.getMessage());
 			  }
 		  }
 	  }
 	  private void procesarMensajeDeCliente(DatagramPacket packet) {
 		  String message = new String(packet.getData()).trim();
-//		  System.out.println("SERVIDOR: Mensaje recibido: " + message);
+//		  System.out.println("SERVIDOR: Mensaje recibido: " + message); 
 		  String[] parts = message.split(specialChar);
 		  
 		  switch(parts[0]) {
-          case "connect":
+          case "conectar":
         	  boolean coneccionExitosa = conectarCliente(packet);
         	  if(coneccionExitosa && clientesConectados == MAX_CLIENTES) {
-        		  enviarMensajeATodos("startgame");
+        		  enviarMensajeATodos("empezarjuego");
         		  GameData.networkListener.empezarJuego();
         	  }
               break;
-          case "disconnect":
+          case "desconectar":
+        	  int numeroCliente = Integer.parseInt(parts[1]);
+        	  numeroCliente = (numeroCliente==1)?0:1;
+        	  clientesConectados--;
+        	  if(clientesConectados>0) {
+                  this.enviarMensajeAlCliente("clientedesconectado!Un jugador se ha desconectado.", this.clientes[numeroCliente].getIp(), this.clientes[numeroCliente].getPort());
+                  System.out.println("SERVIDOR: Un cliente se desconectó");
+              }
+        	  this.limpiarClientes();
+        	  GameData.networkListener.terminarJuego();
               break;
       }	  
 		  if(clientesConectados == MAX_CLIENTES) {
@@ -64,6 +84,9 @@ public class ServerThread extends Thread{
 				  break;
 			  case "recargar":
 				  GameData.networkListener.recargar(Integer.parseInt(parts[1]));
+				  break;
+			  case "bengala":
+				  GameData.networkListener.usarBengala(Integer.parseInt(parts[1]));
 				  break;
 			  }
 		  }
@@ -115,14 +138,14 @@ public class ServerThread extends Thread{
 		  if(clientesConectados < MAX_CLIENTES){
 			  if(!clienteExiste(packet.getAddress(), packet.getPort())){
 				  añadirCliente(packet);
-				  enviarMensajeAlCliente("connection" + specialChar + "successful" + specialChar + (clientesConectados-1),  packet.getAddress(), packet.getPort());
+				  enviarMensajeAlCliente("conexion" + specialChar + "exitosa" + specialChar + (clientesConectados-1),  packet.getAddress(), packet.getPort());
 				  return true;
-			  } else {
-				  // EL CLIENTE YA EXISTE
-			  }
-		  } else {
-			  //PODRIA MANDARLE UN MENSAJE AL CLIENTE DICIENDO QUE SE RECHAZO LA CONEXION PQ EL SERVER ESTA LLENO
-		  }
+			   } else {
+	                // EL CLIENTE YA EXISTE
+	            }
+	        } else {
+	            //PODRIA MANDARLE UN MENSAJE AL CLIENTE DICIENDO QUE SE RECHAZO LA CONEXION PQ EL SERVER ESTA LLENO
+	        }
 		  return false;
 	  }
 	  private boolean clienteExiste(InetAddress address, int port) {
@@ -166,5 +189,6 @@ public class ServerThread extends Thread{
 	  public void end(){
 		  this.end = true;
 		  this.socket.close();
+		  System.out.println("Hilo servidor detenido.");
 	  }
 }

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.intothebullethell.game.globales.AssetRuta;
+import com.intothebullethell.game.managers.RenderManager;
 
 public class Texto {
     private BitmapFont bitmapFont;
@@ -66,8 +67,8 @@ public class Texto {
         layout = new GlyphLayout();
     }
 
-    public void draw(SpriteBatch batch) {
-        bitmapFont.draw(batch, this.text, this.x, this.y);
+    public void draw() {
+        bitmapFont.draw(RenderManager.batch, this.text, this.x, this.y);
     }
 
 

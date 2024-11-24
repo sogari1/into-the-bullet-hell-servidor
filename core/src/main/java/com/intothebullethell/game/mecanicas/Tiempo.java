@@ -1,7 +1,6 @@
 package com.intothebullethell.game.mecanicas;
 
 import com.intothebullethell.game.entidades.Jugador;
-
 public class Tiempo extends Thread {
     private static int tiempo;
     private Jugador[] jugadores;
@@ -9,36 +8,36 @@ public class Tiempo extends Thread {
     private boolean paused;
 
     public Tiempo(Jugador[] jugadores) {
-        Tiempo.tiempo = 30;
+        Tiempo.tiempo = 5;
         this.jugadores = jugadores;
         this.running = true;
-        this.paused = false;  
+        this.paused = true;  
     }
 
     @Override
     public void run() {
         while (running) {
-            if (!paused) { 
+            if (!paused) {
                 try {
                     Thread.sleep(1000);
-//                    System.out.println("Aleatorizar arma en: " + tiempo + " segundos");
                     tiempo--;
+//                    System.out.println("Tiempo: " + tiempo);
                     if (tiempo < 0) {
                         for (Jugador jugador : jugadores) {
                             jugador.cambiarArma();
                         }
                         tiempo = 30;
                     }
-
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    running = false;
+                	e.printStackTrace();
+                	running = false;
                 }
             } else {
                 try {
-                    Thread.sleep(100);  
+                	Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                	e.printStackTrace();
+                    
                 }
             }
         }
@@ -48,16 +47,27 @@ public class Tiempo extends Thread {
         return tiempo;
     }
 
-    public void detener() {
-        running = false;
-    }
-
-    public void pausar() {
+    public synchronized void pausar() {
         paused = true;
     }
 
     public void reanudar() {
         paused = false;
     }
-}
 
+    public void reiniciar() {
+        pausar();
+        tiempo = 6;
+        System.out.println("Tiempo reiniciado a: " + tiempo);
+    }
+
+
+    public void detener() {
+        running = false;
+        System.out.println("Hilo de tiempo terminado.");
+    }
+
+	public boolean isPausado() {
+		return paused;
+	}
+}

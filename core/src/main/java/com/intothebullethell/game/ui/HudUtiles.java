@@ -34,7 +34,7 @@ public class HudUtiles {
 	}
 
 
-	public static void drawWeaponInfo(SpriteBatch batch, Arma currentWeapon, Texto ammoTexto) {
+	public static void drawWeaponInfo(Arma currentWeapon, Texto ammoTexto) {
 	    if (currentWeapon != null) {
 	        String ammoText = currentWeapon.esMunicionInfinita() ? 
 	            "Reserva: " + currentWeapon.getBalasEnReserva() + " / INF" :
@@ -43,7 +43,7 @@ public class HudUtiles {
 	        ammoTexto.setText(ammoText);
 	        ammoTexto.setPosition(10, Gdx.graphics.getHeight() - 850);
 
-	        ammoTexto.draw(batch);
+	        ammoTexto.draw();
 	    }
 	}
 

@@ -1,7 +1,6 @@
 package com.intothebullethell.game.entidades;
 
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -13,14 +12,15 @@ import com.intothebullethell.game.inputs.InputManager;
 import com.intothebullethell.game.managers.EntidadManager;
 import com.intothebullethell.game.mecanicas.ArmaAleatoria;
 import com.intothebullethell.game.objects.armas.Arma;
+import com.intothebullethell.game.objects.armas.Bengala;
 
 public class Jugador extends Entidad {
-    private Arma armaEquipada;
+	private Bengala bengala = new Bengala();
     private ArmaAleatoria armaAleatoria = new ArmaAleatoria();
-    public OrthographicCamera camara;
+    private Arma armaEquipada;
     private TextureRegion upSprite, downSprite, leftSprite, rightSprite;
-    private InputManager inputManager;
     private EntidadManager entidadManager;
+    public OrthographicCamera camara;
     
     private float shootTimer = 0;
     private float opacidad = 1.0f;
@@ -28,45 +28,39 @@ public class Jugador extends Entidad {
     private final float escudoCoolDownMaximo = 2.5f; 
     private boolean disparando = false;
     private int mouseX, mouseY;
-    private int vidaActual;
     
     private int numeroJugador;
 
     public Jugador(int numeroJugador, TextureRegion sprite, TextureRegion upSprite, TextureRegion downSprite, TextureRegion leftSprite, TextureRegion rightSprite, OrthographicCamera camara, InputManager inputManager, EntidadManager entidadManager) {
-    	super(sprite.getTexture(), 20, 100, null);
+    	super(sprite.getTexture(), 20, 150, null);
         this.upSprite = upSprite;
         this.downSprite = downSprite;
         this.leftSprite = leftSprite;
         this.rightSprite = rightSprite;
         this.camara = camara;
-        this.armaEquipada = armaAleatoria.obtenerArmaAleatoria();
-        this.inputManager = inputManager;
-        this.inputManager.setJugador(this);
         this.entidadManager = entidadManager;
         this.numeroJugador = numeroJugador;
     }
 
     @Override
     public void draw(Batch batch) {
-        update(Gdx.graphics.getDeltaTime());
         super.draw(batch); 
     }
 
     @Override
     public void update(float delta) {
-    	Jugador[] jugadores = new Jugador[]{this};
-    	 if (escudoCoolDown > 0) {
-    		 escudoCoolDown -= delta; 
-    		 opacidad = 0.5f;
-         }
-    	 else {
-             opacidad = 1.0f; 
-    	 }
-    	 setColor(1.0f, 1.0f, 1.0f, opacidad); 
-    	 actualizarMovimiento();
-         manejarDisparos(delta);
-         actualizarCamara();
-         entidadManager.grupoProyectiles.update(delta, entidadManager.getGrupoEnemigos().getEntidades(), jugadores);
+    	if(!chequearMuerte()) {
+	    	manejarEscudoCoolDown(delta);
+	    	actualizarMovimiento();
+	    	manejarDisparos(delta);
+	    	actualizarCamara();
+	    	bengala.update(delta);
+	    	NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaActual);
+	    	if(armaEquipada != null) {
+	    		NetworkData.serverThread.enviarMensajeATodos("jugador!arma!" + this.numeroJugador + "!" + this.armaEquipada.getNombre());
+	    		NetworkData.serverThread.enviarMensajeATodos("jugador!armamunicion!" + this.numeroJugador + "!" + this.armaEquipada.getBalasEnReserva() + "!" +  this.armaEquipada.getBalasEnMunicion());
+	    	}
+    	}
     }
 
     private void actualizarMovimiento() {
@@ -127,11 +121,21 @@ public class Jugador extends Entidad {
             velocity.x = 0;
         }
     }
+
+    private void manejarEscudoCoolDown(float delta) {
+    	if (escudoCoolDown > 0) {
+    		escudoCoolDown -= delta;
+    		opacidad = 0.5f; 
+    	} else {
+    		opacidad = 1.0f;
+    	}
+    	setColor(1.0f, 1.0f, 1.0f, opacidad); 
+    }
     private void manejarDisparos(float delta) {
-        if (isDisparando() && GameData.juegoEstado.equals(JuegoEstado.JUGANDO)) {
+        if (isDisparando() && GameData.juegoEstado.equals(JuegoEstado.JUGANDO) && armaEquipada != null) {
             shootTimer -= delta;
             if (shootTimer <= 0) {
-            	entidadManager.grupoProyectiles.dispararProyectil(camara, armaEquipada, getX() + getWidth() / 2, getY() + getHeight() / 2, mouseX, mouseY);
+            	entidadManager.getGrupoProyectiles().dispararProyectil(camara, armaEquipada, getX() + getWidth() / 2, getY() + getHeight() / 2, mouseX, mouseY);
                 shootTimer = armaEquipada.getRatioFuego(); 
             }
         }
@@ -141,35 +145,54 @@ public class Jugador extends Entidad {
         camara.update();
     }
     public void recargarArma() {
-    	armaEquipada.reload();
+    	if(armaEquipada != null) {
+    		armaEquipada.recargar();
+    	}
+    }
+    public void usarBengala() {
+    	bengala.usar(entidadManager);
     }
     public int getVidaActual() {
         return vidaActual;
     }
     public boolean chequearMuerte() {
-        if (vidaActual == 0) {
+        if (this.vidaActual <= 0) {
         	NetworkData.serverThread.enviarMensajeATodos("jugador!muerto!" + this.numeroJugador);
-            return true; 
+        	return true; 
         }
         return false; 
     }
     @Override
     public void recibirDaño(int daño) {
-        if (escudoCoolDown <= 0) {
-            vidaActual -= daño;
-            NetworkData.serverThread.enviarMensajeATodos("jugador!herido!" + this.numeroJugador + "!" + vidaActual);
-            if (vidaActual < 0) {
-                vidaActual = 0; 
-                
-            }
-            escudoCoolDown = escudoCoolDownMaximo; 
+    	if (escudoCoolDown <= 0 && !chequearMuerte()) {
+    		this.vidaActual -= daño;
+    		escudoCoolDown = escudoCoolDownMaximo; 
+    		if(this.vidaActual <= 0) {
+            	this.vidaActual = 0;
+    		}
+//            NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaActual);
         }
+    }
+
+    public void reiniciar() {
+    	disparando = false;
+    	velocity.x = 0;
+    	velocity.y = 0;
     }
     public float getShieldCooldown() {
         return escudoCoolDown;
     }
+    public void aumentarVida(int vida) {
+    	this.vidaActual += vida;
+    	if(this.vidaActual > this.vidaMaxima) {
+    		this.vidaActual = this.vidaMaxima;
+    	}
+    	NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaActual);
+    }
     public void cambiarArma() {
         this.armaEquipada = armaAleatoria.obtenerArmaAleatoria();
+        System.out.println("Arma actual: " + armaEquipada.getNombre());
+        NetworkData.serverThread.enviarMensajeATodos("jugador!arma!" + this.numeroJugador + "!" + this.armaEquipada.getNombre());
     }
     public void setDisparando(boolean disparando) { 
     	this.disparando = disparando; 

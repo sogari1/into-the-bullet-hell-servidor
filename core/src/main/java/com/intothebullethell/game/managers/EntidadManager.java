@@ -8,11 +8,12 @@ import com.intothebullethell.game.pantallas.MultiplayerPantalla;
 
 public class EntidadManager {
 	
-	private MultiplayerPantalla multiplayerPantalla;
-	public EnemigoManager grupoEnemigos;
-	public ProyectilManager grupoProyectiles;
+	private EnemigoManager grupoEnemigos;
+	private ProyectilManager grupoProyectiles;
+	private ObjetoManager grupoObjetos;
 	
 	private GenerarEnemigos generadorEnemigos;
+	private MultiplayerPantalla multiplayerPantalla;
 	
 	 private float temporizadorGeneracion = 0f; 
 	 private static final float TIEMPO_ESPERA = 5f;
@@ -23,14 +24,15 @@ public class EntidadManager {
 		this.multiplayerPantalla = multiplayerPantalla;
 	}
 	private void crearGrupo() {
-		this.grupoEnemigos = new EnemigoManager();
 		this.grupoProyectiles = new ProyectilManager();
+		this.grupoObjetos = new ObjetoManager();
+		this.grupoEnemigos = new EnemigoManager(this);
 	}
 	public void update(float delta, Jugador[] jugadores) {
-		 if (grupoEnemigos.getEntidades().isEmpty()) {
+		 if (grupoEnemigos.getEnemigos().isEmpty()) {
 	            temporizadorGeneracion += delta;
 
-	            if (temporizadorGeneracion >= TIEMPO_ESPERA) {
+	            if (temporizadorGeneracion > TIEMPO_ESPERA) {
 	                generadorEnemigos.generarEnemigos();
 	                multiplayerPantalla.incrementarRonda(); 
 	                temporizadorGeneracion = 0f; 
@@ -38,20 +40,30 @@ public class EntidadManager {
 	        } else {
 	            grupoEnemigos.update(delta);
 	        }
-		grupoProyectiles.update(delta, grupoEnemigos.getEntidades(), jugadores);
+		grupoProyectiles.update(delta, grupoEnemigos.getEnemigos(), jugadores);
+		grupoObjetos.update(jugadores, delta);
 	}
 	public void draw() {
 		grupoEnemigos.draw();
 		grupoProyectiles.draw();
+		grupoObjetos.draw();
 	}
 	public void reset() {
 		grupoEnemigos.reset();
 		grupoProyectiles.reset();
+		grupoObjetos.reset();
+		generadorEnemigos.reiniciarContador();
 	}
 	public EnemigoManager getGrupoEnemigos(){
         return grupoEnemigos;
     }
-	 public ProyectilManager getGrupoProyectiles() {
-	        return grupoProyectiles;
+	public ProyectilManager getGrupoProyectiles() {
+		return grupoProyectiles;
+	}
+	public ObjetoManager getObjetoManager() {
+		return grupoObjetos;
+	}
+	public GenerarEnemigos getGeneradorEnemigos() {
+		return generadorEnemigos;
 	}
 }

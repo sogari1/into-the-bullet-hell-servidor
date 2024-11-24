@@ -2,21 +2,13 @@ package com.intothebullethell.game.inputs;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
-import com.intothebullethell.game.entidades.Jugador;
 import com.badlogic.gdx.InputProcessor;
 
 public class InputManager implements InputProcessor {
-	private Jugador jugador;
     private boolean pausaSolicitada;
 
-    private boolean upPressed, downPressed, leftPressed, rightPressed, recargarPressed, disparandoPressed;
-    private boolean upJustPressed, downJustPressed, leftJustPressed, rightJustPressed, disparandoJustPressed;
+    private boolean up, down, left, right, recargar, disparar;
     private boolean upJustReleased, downJustReleased, leftJustReleased, rightJustReleased, disparandoJustReleased;
-
-
-    public void setJugador(Jugador jugador) {
-        this.jugador = jugador;
-    }
 
     public void setPausaSolicitada(boolean pausaSolicitada) {
         this.pausaSolicitada = pausaSolicitada;
@@ -30,23 +22,23 @@ public class InputManager implements InputProcessor {
     public boolean keyDown(int keycode) {
         switch (keycode) {
             case Keys.W:
-                upPressed = upJustPressed = true;
+                up = true;
                 upJustReleased = false;
                 break;
             case Keys.A:
-                leftPressed = leftJustPressed = true;
+                left = true;
                 leftJustReleased = false;
                 break;
             case Keys.D:
-                rightPressed = rightJustPressed = true;
+                right = true;
                 rightJustReleased = false;
                 break;
             case Keys.S:
-                downPressed = downJustPressed = true;
+                down = true;
                 downJustReleased = false;
                 break;
             case Keys.R:
-                recargarPressed = true;
+                recargar = true;
                 break;
             case Keys.ESCAPE:
                 pausaSolicitada = true;
@@ -59,23 +51,23 @@ public class InputManager implements InputProcessor {
     public boolean keyUp(int keycode) {
         switch (keycode) {
             case Keys.W:
-                upPressed = upJustPressed = false;
+                up = false;
                 upJustReleased = true;
                 break;
             case Keys.A:
-                leftPressed = leftJustPressed = false;
+                left = false;
                 leftJustReleased = true;
                 break;
             case Keys.D:
-                rightPressed = rightJustPressed = false;
+                right = false;
                 rightJustReleased = true;
                 break;
             case Keys.S:
-                downPressed = downJustPressed = false;
+                down = false;
                 downJustReleased = true;
                 break;
             case Keys.R:
-                recargarPressed = false;
+                recargar = false;
                 break;
         }
         return true;
@@ -84,7 +76,7 @@ public class InputManager implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
-            disparandoPressed = disparandoJustPressed = true;
+            disparar = true;
             disparandoJustReleased = false;
         }
         return true;
@@ -93,7 +85,7 @@ public class InputManager implements InputProcessor {
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
-            disparandoPressed = disparandoJustPressed = false;
+            disparar = false;
             disparandoJustReleased = true;
         }
         return true;
@@ -116,38 +108,6 @@ public class InputManager implements InputProcessor {
 
     @Override
     public boolean keyTyped(char character) {
-        return false;
-    }
-
-    public boolean isUpJustPressed() {
-        if (upJustPressed) {
-            upJustPressed = false;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isDownJustPressed() {
-        if (downJustPressed) {
-            downJustPressed = false;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isLeftJustPressed() {
-        if (leftJustPressed) {
-            leftJustPressed = false;
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isRightJustPressed() {
-        if (rightJustPressed) {
-            rightJustPressed = false;
-            return true;
-        }
         return false;
     }
 
@@ -183,36 +143,12 @@ public class InputManager implements InputProcessor {
         return false;
     }
 
-    public boolean isUpPressed() {
-        return upPressed;
-    }
-
-    public boolean isDownPressed() {
-        return downPressed;
-    }
-
-    public boolean isLeftPressed() {
-        return leftPressed;
-    }
-
-    public boolean isRightPressed() {
-        return rightPressed;
-    }
-
-    public boolean isRecargarPressed() {
-    	return recargarPressed;
-    }
-    public boolean isDisparandoPressed() {
-        return disparandoPressed;
-    }
-
-    public boolean isDisparandoJustPressed() {
-        if (disparandoJustPressed) {
-            disparandoJustPressed = false;
-            return true;
-        }
-        return false;
-    }
+    public boolean isUp() { return up; }
+    public boolean isDown() { return down; }
+    public boolean isLeft() { return left; }
+    public boolean isRight() { return right; }
+    public boolean isRecargar() { return recargar; }
+    public boolean isDisparar() { return disparar; }
 
     public boolean isDisparandoJustReleased() {
         if (disparandoJustReleased) {

@@ -7,12 +7,18 @@ import java.util.List;
 
 import com.intothebullethell.game.entidades.Enemigo;
 import com.intothebullethell.game.globales.NetworkData;
+import com.intothebullethell.game.objects.objetos.Objeto;
 public class EnemigoManager {
 
     private List<Enemigo> enemigos = new ArrayList<>();
-    private List<Integer> enemigosAEliminar     = new ArrayList<>();
+    private List<Integer> enemigosAEliminar = new ArrayList<>();
+    private EntidadManager entidadManager; 
     
-    public void añadirEntidad(Enemigo enemigo) {
+    public EnemigoManager(EntidadManager entidadManager) {
+        this.entidadManager = entidadManager;
+    }
+    
+    public void añadirEnemigo(Enemigo enemigo) {
         enemigos.add(enemigo);
     }
 
@@ -26,7 +32,14 @@ public class EnemigoManager {
             NetworkData.serverThread.enviarMensajeATodos("enemigo!mover!" + i + "!" + enemigo.getX() + "!" + enemigo.getY());
 
             if (enemigo.isMuerto()) {
-                enemigosAEliminar.add(i); 
+            	Objeto objeto = enemigo.dropearObjeto(); 
+            	if (objeto != null) {
+            		objeto.setPosition(enemigo.getX(), enemigo.getY()); 
+            		entidadManager.getObjetoManager().agregarObjeto(objeto); 
+            		
+            		NetworkData.serverThread.enviarMensajeATodos("objeto!crear!" + objeto.getTipo() + "!" + objeto.getX() + "!" + objeto.getY());
+            	}
+            	enemigosAEliminar.add(i); 
             }
             i++;
         }
@@ -35,16 +48,13 @@ public class EnemigoManager {
     }
 
     private void eliminarEnemigos() {
-        
         Collections.sort(enemigosAEliminar, Collections.reverseOrder());
-        
         for (Integer index : enemigosAEliminar) {
             if (index >= 0 && index < enemigos.size()) {
                 enemigos.remove((int)index);
                 NetworkData.serverThread.enviarMensajeATodos("enemigo!remover!" + index);
             }
         }
-
         enemigosAEliminar.clear();
     }
     
@@ -53,14 +63,17 @@ public class EnemigoManager {
             enemigo.draw(RenderManager.batchRender);
         }
     }
-    public List<Enemigo> getEntidades() {
+
+    public List<Enemigo> getEnemigos() {
         return enemigos;
     }
 
     public int getCantidad() {
         return enemigos.size();
     }
-    public void reset(){
+    public void reset() {
         enemigos.clear();
+        enemigosAEliminar.clear();
     }
+
 }

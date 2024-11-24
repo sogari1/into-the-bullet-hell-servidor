@@ -5,6 +5,9 @@ package com.intothebullethell.game.entidades;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.intothebullethell.game.managers.EntidadManager;
+import com.intothebullethell.game.objects.objetos.Balas;
+import com.intothebullethell.game.objects.objetos.Corazon;
+import com.intothebullethell.game.objects.objetos.Objeto;
 
 public abstract class Enemigo extends Entidad {
     protected Jugador[] jugadores;
@@ -14,6 +17,7 @@ public abstract class Enemigo extends Entidad {
     protected float tiempoAtaque;
     protected float proyectilVelocidad;
     protected int daño;
+    private final float PROBABILIDAD_DROP = 0.2f; 
 
     public Enemigo(Texture texture, int vida, int velocidad, float intervaloAtaque, int daño, float proyectilVelocidad, Texture proyectilTextura, Jugador[] jugadores, EntidadManager entidadManager) {
         super(texture, vida, velocidad, proyectilTextura);
@@ -52,12 +56,14 @@ public abstract class Enemigo extends Entidad {
         Jugador jugadorCercano = null;
         float distanciaMinima = Float.MAX_VALUE;
 
-        for (Jugador j : jugadores) {
-            float distancia = Vector2.dst(getX(), getY(), j.getX(), j.getY());
-            if (distancia < distanciaMinima) {
-                distanciaMinima = distancia;
-                jugadorCercano = j;
-            }
+        for (Jugador jugador : jugadores) {
+        	if(!jugador.chequearMuerte()) {
+        		float distancia = Vector2.dst(getX(), getY(), jugador.getX(), jugador.getY());
+        		if (distancia < distanciaMinima) {
+        			distanciaMinima = distancia;
+        			jugadorCercano = jugador;
+        		}
+        	}
         }
         return jugadorCercano;
     }
@@ -84,6 +90,17 @@ public abstract class Enemigo extends Entidad {
             return true;
         }
         return false;
+    }
+    public Objeto dropearObjeto() {
+        if (Math.random() < PROBABILIDAD_DROP) {
+          
+            if (Math.random() < 0.5) { 
+                return new Corazon();
+            } else { 
+                return new Balas();
+            }
+        }
+        return null;
     }
 
     public abstract String getTipoEnemigo();

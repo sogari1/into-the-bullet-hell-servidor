@@ -50,7 +50,7 @@ public class ProyectilManager {
         }
 
         for (Jugador jugador : jugadores) { 
-            if (proyectil.collidesWith(jugador) && !proyectil.isDisparadoPorJugador()) {
+            if (proyectil.collidesWith(jugador) && !proyectil.isDisparadoPorJugador() && !jugador.chequearMuerte()) {
                 jugador.recibirDaño(proyectil.getDaño());
                 return true;
             }
@@ -76,6 +76,17 @@ public class ProyectilManager {
             NetworkData.serverThread.enviarMensajeATodos("proyectil!remover!" + index);
         } 
     }
+    public void eliminarProyectilesEnemigos() {
+        for (int i = 0; i < proyectiles.size(); i++) {
+            if (!proyectiles.get(i).isDisparadoPorJugador()) {
+                NetworkData.serverThread.enviarMensajeATodos("proyectil!remover!" + i);
+                proyectiles.remove(i);
+                i--; 
+            }
+        }
+    }
+
+
     public void draw() {
         for (Proyectil proyectil : proyectiles) {
             proyectil.draw(RenderManager.batchRender);
