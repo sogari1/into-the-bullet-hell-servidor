@@ -15,12 +15,10 @@ public class Adrenalina extends Activo {
 	@Override
 	protected void aplicarEfecto(Jugador jugador) {
 		jugador.aumentarVelocidad(incrementoVelocidad);
-		System.out.println("Velocidad aumentada en " + incrementoVelocidad + " por " + getTiempoDeUso() + " segundos.");
 	}
 
 	@Override
 	protected void revertirEfecto(Jugador jugador) {
 		jugador.aumentarVelocidad(-incrementoVelocidad);
-		System.out.println("Velocidad restaurada.");
 	}
 }

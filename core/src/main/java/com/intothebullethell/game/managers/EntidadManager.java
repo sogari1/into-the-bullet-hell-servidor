@@ -10,7 +10,7 @@ public class EntidadManager {
 	
 	private EnemigoManager grupoEnemigos;
 	private ProyectilManager grupoProyectiles;
-	private ObjetoManager grupoObjetos;
+	private AgarrableManager grupoAgarrables;
 	
 	private GenerarEnemigos generadorEnemigos;
 	private MultiplayerPantalla multiplayerPantalla;
@@ -25,7 +25,7 @@ public class EntidadManager {
 	}
 	private void crearGrupo() {
 		this.grupoProyectiles = new ProyectilManager();
-		this.grupoObjetos = new ObjetoManager();
+		this.grupoAgarrables = new AgarrableManager();
 		this.grupoEnemigos = new EnemigoManager(this);
 	}
 	public void update(float delta, Jugador[] jugadores) {
@@ -41,17 +41,17 @@ public class EntidadManager {
 	            grupoEnemigos.update(delta);
 	        }
 		grupoProyectiles.update(delta, grupoEnemigos.getEnemigos(), jugadores);
-		grupoObjetos.update(jugadores, delta);
+		grupoAgarrables.update(jugadores, delta);
 	}
 	public void draw() {
 		grupoEnemigos.draw();
 		grupoProyectiles.draw();
-		grupoObjetos.draw();
+		grupoAgarrables.draw();
 	}
 	public void reset() {
 		grupoEnemigos.reset();
 		grupoProyectiles.reset();
-		grupoObjetos.reset();
+		grupoAgarrables.reset();
 		generadorEnemigos.reiniciarContador();
 	}
 	public EnemigoManager getGrupoEnemigos(){
@@ -60,8 +60,8 @@ public class EntidadManager {
 	public ProyectilManager getGrupoProyectiles() {
 		return grupoProyectiles;
 	}
-	public ObjetoManager getObjetoManager() {
-		return grupoObjetos;
+	public AgarrableManager getObjetoManager() {
+		return grupoAgarrables;
 	}
 	public GenerarEnemigos getGeneradorEnemigos() {
 		return generadorEnemigos;

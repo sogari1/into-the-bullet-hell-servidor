@@ -59,7 +59,8 @@ public class Jugador extends Entidad {
 	    	manejarDisparos(delta);
 	    	actualizarCamara();
 	    	bengala.update(delta);
-	    	NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaActual);
+	    	NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaMaxima + "!" + this.vidaActual);
+	    	NetworkData.serverThread.enviarMensajeATodos("jugador!bengala!" + this.numeroJugador + "!" + this.bengala.getUsosRestantes());
 	    	if(armaEquipada != null && activoEquipado != null) {
 	    		NetworkData.serverThread.enviarMensajeATodos("jugador!arma!" + this.numeroJugador + "!" + this.armaEquipada.getNombre());
 	    		NetworkData.serverThread.enviarMensajeATodos("jugador!activo!" + this.numeroJugador + "!" + this.activoEquipado.getNombre());

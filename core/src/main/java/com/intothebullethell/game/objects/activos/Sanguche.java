@@ -15,12 +15,10 @@ public class Sanguche extends Activo {
     @Override
     protected void aplicarEfecto(Jugador jugador) {
         jugador.getArmaEquipada().aumentarDaño(incrementoDaño);  
-        System.out.println("Daño aumentado en " + incrementoDaño + " por " + getTiempoDeUso() + " segundos.");
     }
 
 	@Override
 	protected void revertirEfecto(Jugador jugador) {
 		jugador.getArmaEquipada().aumentarDaño(-incrementoDaño);  
-		System.out.println("Daño restaurado.");
 	}
 }

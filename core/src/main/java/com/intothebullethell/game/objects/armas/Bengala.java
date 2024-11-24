@@ -1,12 +1,15 @@
 package com.intothebullethell.game.objects.armas;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.intothebullethell.game.globales.RecursoRuta;
 import com.intothebullethell.game.globales.SonidoRuta;
 import com.intothebullethell.game.managers.EntidadManager;
 import com.intothebullethell.sonido.EfectoSonido;
 
 public class Bengala {
 	private EfectoSonido efectosSonido = SonidoRuta.BENGALA;
-	 
+	private Texture spriteBengala = RecursoRuta.BENGALA;
+			
     private int usosMaximos = 2;
     private int usosRestantes = usosMaximos;
     private float cooldown = 5.0f; 
@@ -17,7 +20,6 @@ public class Bengala {
         	 entidadManager.getGrupoProyectiles().eliminarProyectilesEnemigos();
 
             usosRestantes--;
-            System.out.println("Bengalas restantes: " + usosRestantes);
             tiempoDesdeUltimoUso = 0; 
             efectosSonido.reproducirSonido();
         }

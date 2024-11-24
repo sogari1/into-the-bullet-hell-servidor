@@ -10,7 +10,7 @@ import com.intothebullethell.game.globales.SonidoRuta;
 
 public class Escopeta extends Arma {
     public Escopeta() {
-        super("Escopeta", 280, 3, 0.8f, 8, false, 64, RecursoRuta.PROYECTIL_ESCOPETA, RecursoRuta.ARMA_ESCOPETA, SonidoRuta.DISPARIO_ESCOPETA);
+        super("Escopeta", 280, 3, 0.8f, 8, 64, RecursoRuta.PROYECTIL_ESCOPETA, RecursoRuta.ARMA_ESCOPETA, SonidoRuta.DISPARIO_ESCOPETA);
     }
 
     @Override

@@ -64,10 +64,7 @@ public class ProyectilManager {
             Vector2 target = new Vector2(worldX, worldY);
             Vector2 position = new Vector2(jugadorX, jugadorY);
 
-            arma.disparar(position, target, proyectiles);
-            if (!arma.esMunicionInfinita()) {
-                arma.dispararProyectil(position, target, proyectiles);
-            }
+            arma.dispararProyectil(position, target, proyectiles);
         }
     }
     private void removerProyectil(int index) {

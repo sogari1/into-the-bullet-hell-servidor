@@ -46,20 +46,15 @@ public abstract class Activo {
             if (efectoSonido != null) {
                 efectoSonido.reproducirSonido();
             }
-
-            System.out.println(nombre + " ha sido usado. Duración: " + tiempoDeUso + " segundos.");
-
             new Thread(() -> {
                 try {
                     Thread.sleep((long) (tiempoDeUso * 1000)); 
                     revertirEfecto(jugador); 
-                    System.out.println("El efecto de " + nombre + " ha terminado.");
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }).start();
         } else {
-            System.out.println("Este objeto activo ya ha sido usado y no se puede reutilizar.");
         }
     }
 

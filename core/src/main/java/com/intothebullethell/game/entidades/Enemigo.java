@@ -6,8 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.intothebullethell.game.managers.EntidadManager;
 import com.intothebullethell.game.objects.objetos.Agarrable;
-import com.intothebullethell.game.objects.objetos.Balas;
-import com.intothebullethell.game.objects.objetos.Corazon;
+import com.intothebullethell.game.objects.objetos.CajaMunicion;
+import com.intothebullethell.game.objects.objetos.CajaVida;
 
 public abstract class Enemigo extends Entidad {
     protected Jugador[] jugadores;
@@ -95,9 +95,9 @@ public abstract class Enemigo extends Entidad {
         if (Math.random() < PROBABILIDAD_DROP) {
           
             if (Math.random() < 0.5) { 
-                return new Corazon();
+                return new CajaVida();
             } else { 
-                return new Balas();
+                return new CajaMunicion();
             }
         }
         return null;
@@ -105,6 +105,6 @@ public abstract class Enemigo extends Entidad {
 
     public abstract String getTipoEnemigo();
 	public String getTipoProyectil() {
-		return "Escopeta";
+		return "Enemigo";
 	}
 }

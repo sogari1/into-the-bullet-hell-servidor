@@ -8,7 +8,7 @@ import com.intothebullethell.game.managers.EntidadManager;
 
 public class EnemigoNormal extends Enemigo {
     public EnemigoNormal(Jugador[] jugadores, EntidadManager entidadManager) {
-        super(RecursoRuta.ENEMIGO, 15, 10, 12f, 1, 120, RecursoRuta.PROYECTIL_ESCOPETA, jugadores, entidadManager);
+        super(RecursoRuta.ENEMIGO, 15, 10, 12f, 1, 120, RecursoRuta.PROYECTIL_ENEMIGO, jugadores, entidadManager);
     }
     @Override
     public void atacar() {

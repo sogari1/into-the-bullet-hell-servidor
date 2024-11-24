@@ -7,12 +7,12 @@ import java.util.List;
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.globales.NetworkData;
 import com.intothebullethell.game.objects.objetos.Agarrable;
-public class ObjetoManager {
+public class AgarrableManager {
 	
 	private List<Agarrable> agarrables = new ArrayList<>();
 
-    public void agregarObjeto(Agarrable objeto) {
-    	agarrables.add(objeto);
+    public void agregarObjeto(Agarrable agarrable) {
+    	agarrables.add(agarrable);
     }
 
     public void update(Jugador[] jugadores, float delta) {
@@ -29,8 +29,8 @@ public class ObjetoManager {
         }
     }
     public void draw() {
-        for (Agarrable objeto : agarrables) {
-            objeto.draw(RenderManager.batchRender);
+        for (Agarrable agarrable : agarrables) {
+        	agarrable.draw(RenderManager.batchRender);
         }
     }
 

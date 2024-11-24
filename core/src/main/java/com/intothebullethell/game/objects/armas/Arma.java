@@ -15,19 +15,17 @@ public abstract class Arma {
     protected Texture proyectilTextura;
     protected Texture armaTextura;
     protected int capacidadMunicion;
-    protected boolean municionInfinita;
     protected int balasEnReserva;
     protected int balasEnMunicion;
     private EfectoSonido efectosSonido;
     
 
-    public Arma(String nombre, float proyectilVelocidad, int daño, float ratioFuego, int capacidadMunicion, boolean municionInfinita, int balasEnReserva, Texture proyectilTextura, Texture armaTextura, EfectoSonido efectosSonido) {
+    public Arma(String nombre, float proyectilVelocidad, int daño, float ratioFuego, int capacidadMunicion, int balasEnReserva, Texture proyectilTextura, Texture armaTextura, EfectoSonido efectosSonido) {
         this.nombre = nombre;
         this.proyectilVelocidad = proyectilVelocidad;
         this.daño = daño;
         this.ratioFuego = ratioFuego;
         this.capacidadMunicion = capacidadMunicion;
-        this.municionInfinita = municionInfinita;
         this.balasEnReserva = balasEnReserva;
         this.balasEnMunicion = capacidadMunicion; 
         this.proyectilTextura = proyectilTextura;
@@ -38,11 +36,11 @@ public abstract class Arma {
     public abstract void disparar(Vector2 position, Vector2 target, List<Proyectil> proyectiles);
 
     public boolean puedeDisparar() {
-        return balasEnMunicion > 0 || municionInfinita;
+        return balasEnMunicion > 0;
     }
 
     public void recargar() {
-        if (!municionInfinita && balasEnReserva > 0) {
+        if (balasEnReserva > 0) {
             int bulletsNeeded = capacidadMunicion - balasEnMunicion;
             int bulletsToReload = Math.min(bulletsNeeded, balasEnReserva);
 
@@ -55,17 +53,11 @@ public abstract class Arma {
     public void dispararProyectil(Vector2 position, Vector2 target, List<Proyectil> proyectiles) {
         if (puedeDisparar()) {
         	disparar(position, target, proyectiles);  
-            if (!municionInfinita) {
-            	balasEnMunicion--;  
-            }
+        	balasEnMunicion--;  
+            efectosSonido.reproducirSonido();
         }
-        efectosSonido.reproducirSonido();
     }
 
-
-    public boolean esMunicionInfinita() {
-        return municionInfinita;
-    }
 
     public int getBalasEnMunicion() {
         return balasEnMunicion;

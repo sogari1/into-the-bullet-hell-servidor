@@ -4,9 +4,9 @@ import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.globales.RecursoRuta;
 import com.intothebullethell.game.globales.SonidoRuta;
 
-public class Balas extends Agarrable {
+public class CajaMunicion extends Agarrable {
 
-	public Balas() {
+	public CajaMunicion() {
 		super(RecursoRuta.CAJA_MUNICION, SonidoRuta.CAJA_MUNICION);
 	}
     @Override
@@ -18,6 +18,6 @@ public class Balas extends Agarrable {
     }
 	@Override
 	public String getTipo() {
-		return "balas";
+		return "CajaMunicion";
 	}
 }
