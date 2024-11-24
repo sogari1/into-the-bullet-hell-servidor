@@ -86,7 +86,6 @@ public abstract class Arma {
     public float getRatioFuego() {
 		return ratioFuego;
 	}
-
 	public Texture getArmaTextura() {
         return armaTextura;
     }
@@ -95,5 +94,8 @@ public abstract class Arma {
 	}
 	public void aumentarBalasEnReserva(int balasEnReserva) {
 		this.balasEnReserva += balasEnReserva;
+	}
+	public void aumentarDaño(int daño){
+		this.daño += daño;
 	}
 }

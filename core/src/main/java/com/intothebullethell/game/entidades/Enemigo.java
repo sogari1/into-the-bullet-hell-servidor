@@ -5,9 +5,9 @@ package com.intothebullethell.game.entidades;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.intothebullethell.game.managers.EntidadManager;
+import com.intothebullethell.game.objects.objetos.Agarrable;
 import com.intothebullethell.game.objects.objetos.Balas;
 import com.intothebullethell.game.objects.objetos.Corazon;
-import com.intothebullethell.game.objects.objetos.Objeto;
 
 public abstract class Enemigo extends Entidad {
     protected Jugador[] jugadores;
@@ -91,7 +91,7 @@ public abstract class Enemigo extends Entidad {
         }
         return false;
     }
-    public Objeto dropearObjeto() {
+    public Agarrable dropearObjeto() {
         if (Math.random() < PROBABILIDAD_DROP) {
           
             if (Math.random() < 0.5) { 

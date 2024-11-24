@@ -21,6 +21,7 @@ public interface NetworkActionsListener {
 	void dispararRelease(int jugadorId);
 	void recargar(int jugadorId);
 	void usarBengala(int jugadorId);
+	void usarActivo(int jugadorId);
 	
 	
 }

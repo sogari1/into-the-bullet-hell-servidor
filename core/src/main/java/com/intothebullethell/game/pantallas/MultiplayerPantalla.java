@@ -208,6 +208,10 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 		jugadores[jugadorId].usarBengala();
 	}
 	@Override
+	public void usarActivo(int jugadorId) {
+		jugadores[jugadorId].usarActivo();
+	}
+	@Override
 	public void disparar(int jugadorId, int mouseX, int mouseY) {
 		jugadores[jugadorId].setMouseX(mouseX);
 		jugadores[jugadorId].setMouseY(mouseY);

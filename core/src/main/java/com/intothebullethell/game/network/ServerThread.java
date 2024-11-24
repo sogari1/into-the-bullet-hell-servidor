@@ -10,46 +10,46 @@ import com.intothebullethell.game.globales.GameData;
 
 public class ServerThread extends Thread{
 
-	  private final int PORT = 5555;
-	  private DatagramSocket socket;
-	  private boolean end = false;
-	  private String specialChar = "!";
-	  private final int MAX_CLIENTES = 2;
-	  private int clientesConectados = 0;
-	  private Cliente[] clientes = new Cliente[MAX_CLIENTES];
-
-	  public ServerThread() {
-	        try {
-	            socket = new DatagramSocket(PORT);
-	        } catch (SocketException e) {
-	            if (e.getMessage().contains("Address already in use")) {
-	                System.err.println("Error: El puerto " + PORT + " ya está en uso. Por favor, cierra el servidor anterior o utiliza otro puerto.");
-	            } else {
-	                System.err.println("Error al inicializar el servidor: " + e.getMessage());
-	            }
-	            throw new RuntimeException("No se pudo iniciar el servidor debido a un problema con el socket.");
-	        }
-	    }
-
-	  @Override
-	  public void run() {
-		  while (!end) {
-			  DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
-			  try {
-				  socket.receive(packet);
-				  procesarMensajeDeCliente(packet);
-			  } catch (SocketException e) {
-				  if (socket.isClosed()) {
-					  System.out.println("Servidor cerrado correctamente.");
-				  } else {
-					  throw new RuntimeException("Error inesperado en el socket: " + e.getMessage(), e);
-				  }
-			  } catch (IOException e) {
-				  System.err.println("Error al recibir paquete: " + e.getMessage());
-			  }
-		  }
-	  }
-	  private void procesarMensajeDeCliente(DatagramPacket packet) {
+	private final int PORT = 5555;
+	private DatagramSocket socket;
+	private boolean end = false;
+	private String specialChar = "!";
+	private final int MAX_CLIENTES = 2;
+	private int clientesConectados = 0;
+	private Cliente[] clientes = new Cliente[MAX_CLIENTES];
+	
+	public ServerThread() {
+		try {
+			socket = new DatagramSocket(PORT);
+		} catch (SocketException e) {
+			if (e.getMessage().contains("Address already in use")) {
+				System.err.println("Error: El puerto " + PORT + " ya está en uso. Por favor, cierra el servidor anterior o utiliza otro puerto.");
+			} else {
+				System.err.println("Error al inicializar el servidor: " + e.getMessage());
+			}
+			throw new RuntimeException("No se pudo iniciar el servidor debido a un problema con el socket.");
+		}
+	}
+	
+	@Override
+	public void run() {
+		while (!end) {
+			DatagramPacket packet = new DatagramPacket(new byte[1024], 1024);
+			try {
+				socket.receive(packet);
+				procesarMensajeDeCliente(packet);
+			} catch (SocketException e) {
+				if (socket.isClosed()) {
+					System.out.println("Servidor cerrado correctamente.");
+				} else {
+					throw new RuntimeException("Error inesperado en el socket: " + e.getMessage(), e);
+				}
+			} catch (IOException e) {
+				System.err.println("Error al recibir paquete: " + e.getMessage());
+			}
+		}
+	}
+	 private void procesarMensajeDeCliente(DatagramPacket packet) {
 		  String message = new String(packet.getData()).trim();
 //		  System.out.println("SERVIDOR: Mensaje recibido: " + message); 
 		  String[] parts = message.split(specialChar);
@@ -67,7 +67,7 @@ public class ServerThread extends Thread{
         	  numeroCliente = (numeroCliente==1)?0:1;
         	  clientesConectados--;
         	  if(clientesConectados>0) {
-                  this.enviarMensajeAlCliente("clientedesconectado!Un jugador se ha desconectado.", this.clientes[numeroCliente].getIp(), this.clientes[numeroCliente].getPort());
+        		  this.enviarMensajeAlCliente("clientedesconectado!Un jugador se ha desconectado.", this.clientes[numeroCliente].getIp(), this.clientes[numeroCliente].getPort());
                   System.out.println("SERVIDOR: Un cliente se desconectó");
               }
         	  this.limpiarClientes();
@@ -87,6 +87,9 @@ public class ServerThread extends Thread{
 				  break;
 			  case "bengala":
 				  GameData.networkListener.usarBengala(Integer.parseInt(parts[1]));
+				  break;
+			  case "activo":
+				  GameData.networkListener.usarActivo(Integer.parseInt(parts[1]));
 				  break;
 			  }
 		  }
@@ -162,12 +165,12 @@ public class ServerThread extends Thread{
 		  System.out.println("SERVIDOR: Cliente conectado");
 	  }
 
-	  public void enviarMensajeAlCliente(String msg, InetAddress ip, int port){
-		  byte[] data = msg.getBytes();
-		  DatagramPacket packet = new DatagramPacket(data, data.length, ip, port);
+	  public void enviarMensajeAlCliente(String mensaje, InetAddress ip, int puerto){
+		  byte[] data = mensaje.getBytes();
+		  DatagramPacket paquete = new DatagramPacket(data, data.length, ip, puerto);
 		  try {
-			  socket.send(packet);
-//	  	          System.out.println("SERVIDOR: Mensaje enviado: " + msg);
+			  socket.send(paquete);
+//	  	          System.out.println("SERVIDOR: Mensaje enviado: " + mensaje);
 		  } catch (IOException e) {
 		  }
 	  }

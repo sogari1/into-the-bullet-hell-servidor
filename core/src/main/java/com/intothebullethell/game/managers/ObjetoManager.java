@@ -6,23 +6,22 @@ import java.util.List;
 
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.globales.NetworkData;
-import com.intothebullethell.game.objects.objetos.Objeto;
-
+import com.intothebullethell.game.objects.objetos.Agarrable;
 public class ObjetoManager {
 	
-	private List<Objeto> objetos= new ArrayList<>();
+	private List<Agarrable> agarrables = new ArrayList<>();
 
-    public void agregarObjeto(Objeto objeto) {
-    	objetos.add(objeto);
+    public void agregarObjeto(Agarrable objeto) {
+    	agarrables.add(objeto);
     }
 
     public void update(Jugador[] jugadores, float delta) {
-        for (Iterator<Objeto> iter = objetos.iterator(); iter.hasNext();) {
-            Objeto objeto = iter.next();
+        for (Iterator<Agarrable> iter = agarrables.iterator(); iter.hasNext();) {
+        	Agarrable objeto = iter.next();
             for (Jugador jugador : jugadores) {
                 if (jugador.getBoundingRectangle().overlaps(objeto.getBoundingRectangle())) {
                     objeto.aplicarEfecto(jugador);
-                    int i = objetos.indexOf(objeto); 
+                    int i = agarrables.indexOf(objeto); 
                     NetworkData.serverThread.enviarMensajeATodos("objeto!remover!" + i);
                     iter.remove();
                 }
@@ -30,12 +29,12 @@ public class ObjetoManager {
         }
     }
     public void draw() {
-        for (Objeto objeto : objetos) {
+        for (Agarrable objeto : agarrables) {
             objeto.draw(RenderManager.batchRender);
         }
     }
 
     public void reset() {
-    	objetos.clear();
+    	agarrables.clear();
     }
 }

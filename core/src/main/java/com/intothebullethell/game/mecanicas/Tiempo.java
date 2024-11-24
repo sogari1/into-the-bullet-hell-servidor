@@ -25,6 +25,7 @@ public class Tiempo extends Thread {
                     if (tiempo < 0) {
                         for (Jugador jugador : jugadores) {
                             jugador.cambiarArma();
+                            jugador.cambiarActivo();
                         }
                         tiempo = 30;
                     }

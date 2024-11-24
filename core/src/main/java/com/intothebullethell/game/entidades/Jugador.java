@@ -10,14 +10,18 @@ import com.intothebullethell.game.globales.JuegoEstado;
 import com.intothebullethell.game.globales.NetworkData;
 import com.intothebullethell.game.inputs.InputManager;
 import com.intothebullethell.game.managers.EntidadManager;
+import com.intothebullethell.game.mecanicas.ActivoAleatorio;
 import com.intothebullethell.game.mecanicas.ArmaAleatoria;
+import com.intothebullethell.game.objects.activos.Activo;
 import com.intothebullethell.game.objects.armas.Arma;
 import com.intothebullethell.game.objects.armas.Bengala;
 
 public class Jugador extends Entidad {
 	private Bengala bengala = new Bengala();
     private ArmaAleatoria armaAleatoria = new ArmaAleatoria();
+    private ActivoAleatorio activoAleatorio = new ActivoAleatorio();
     private Arma armaEquipada;
+    private Activo activoEquipado;
     private TextureRegion upSprite, downSprite, leftSprite, rightSprite;
     private EntidadManager entidadManager;
     public OrthographicCamera camara;
@@ -56,8 +60,9 @@ public class Jugador extends Entidad {
 	    	actualizarCamara();
 	    	bengala.update(delta);
 	    	NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaActual);
-	    	if(armaEquipada != null) {
+	    	if(armaEquipada != null && activoEquipado != null) {
 	    		NetworkData.serverThread.enviarMensajeATodos("jugador!arma!" + this.numeroJugador + "!" + this.armaEquipada.getNombre());
+	    		NetworkData.serverThread.enviarMensajeATodos("jugador!activo!" + this.numeroJugador + "!" + this.activoEquipado.getNombre());
 	    		NetworkData.serverThread.enviarMensajeATodos("jugador!armamunicion!" + this.numeroJugador + "!" + this.armaEquipada.getBalasEnReserva() + "!" +  this.armaEquipada.getBalasEnMunicion());
 	    	}
     	}
@@ -152,6 +157,12 @@ public class Jugador extends Entidad {
     public void usarBengala() {
     	bengala.usar(entidadManager);
     }
+    public void usarActivo() {
+    	if(activoEquipado != null) {
+    		activoEquipado.usar(this);
+    		NetworkData.serverThread.enviarMensajeATodos("jugador!activousado!" + this.numeroJugador + "!" + "true");
+    	}
+    }
     public int getVidaActual() {
         return vidaActual;
     }
@@ -170,7 +181,6 @@ public class Jugador extends Entidad {
     		if(this.vidaActual <= 0) {
             	this.vidaActual = 0;
     		}
-//            NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaActual);
         }
     }
 
@@ -187,12 +197,13 @@ public class Jugador extends Entidad {
     	if(this.vidaActual > this.vidaMaxima) {
     		this.vidaActual = this.vidaMaxima;
     	}
-    	NetworkData.serverThread.enviarMensajeATodos("jugador!vida!" + this.numeroJugador + "!" + this.vidaActual);
     }
     public void cambiarArma() {
         this.armaEquipada = armaAleatoria.obtenerArmaAleatoria();
-        System.out.println("Arma actual: " + armaEquipada.getNombre());
-        NetworkData.serverThread.enviarMensajeATodos("jugador!arma!" + this.numeroJugador + "!" + this.armaEquipada.getNombre());
+    }
+    public void cambiarActivo() {
+        this.activoEquipado = activoAleatorio.obtenerActivoAleatorio();
+        NetworkData.serverThread.enviarMensajeATodos("jugador!activousado!" + this.numeroJugador + "!" + "false");
     }
     public void setDisparando(boolean disparando) { 
     	this.disparando = disparando; 
@@ -218,4 +229,7 @@ public class Jugador extends Entidad {
     public void setMouseY(int mouseY) {
 		this.mouseY = mouseY;
 	}
+    public void aumentarVelocidad(int velocidad) {
+    	this.velocidad += velocidad;
+    }
 }

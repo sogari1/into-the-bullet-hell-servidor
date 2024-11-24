@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.intothebullethell.game.entidades.Enemigo;
 import com.intothebullethell.game.globales.NetworkData;
-import com.intothebullethell.game.objects.objetos.Objeto;
+import com.intothebullethell.game.objects.objetos.Agarrable;
 public class EnemigoManager {
 
     private List<Enemigo> enemigos = new ArrayList<>();
@@ -32,7 +32,7 @@ public class EnemigoManager {
             NetworkData.serverThread.enviarMensajeATodos("enemigo!mover!" + i + "!" + enemigo.getX() + "!" + enemigo.getY());
 
             if (enemigo.isMuerto()) {
-            	Objeto objeto = enemigo.dropearObjeto(); 
+            	Agarrable objeto = enemigo.dropearObjeto(); 
             	if (objeto != null) {
             		objeto.setPosition(enemigo.getX(), enemigo.getY()); 
             		entidadManager.getObjetoManager().agregarObjeto(objeto); 
