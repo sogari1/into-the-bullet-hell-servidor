@@ -27,7 +27,7 @@ public class Jugador extends Entidad {
     
     public OrthographicCamera camara;
     
-    private float shootTimer = 0;
+    private float disparoTimer = 0;
     private float opacidad = 1.0f;
     private float escudoCoolDown = 0;
     private final float escudoCoolDownMaximo = 2.5f; 
@@ -146,11 +146,11 @@ public class Jugador extends Entidad {
     	NetworkData.serverThread.enviarMensajeATodos("jugador!opacidad!" + this.numeroJugador + "!" + this.opacidad);
     }
     private void manejarDisparos(float delta) {
+    	disparoTimer -= delta;
         if (isDisparando() && GameData.juegoEstado.equals(JuegoEstado.JUGANDO) && armaEquipada != null) {
-            shootTimer -= delta;
-            if (shootTimer <= 0) {
+            if (disparoTimer <= 0) {
             	entidadManager.getGrupoProyectiles().dispararProyectil(camara, armaEquipada, getX() + getWidth() / 2, getY() + getHeight() / 2, mouseX, mouseY);
-                shootTimer = armaEquipada.getRatioFuego(); 
+            	disparoTimer = armaEquipada.getRatioFuego(); 
             }
         }
     }
@@ -195,7 +195,6 @@ public class Jugador extends Entidad {
     		}
         }
     }
-
     public void reiniciar() {
     	disparando = false;
     	velocity.x = 0;
@@ -204,7 +203,7 @@ public class Jugador extends Entidad {
     public float getShieldCooldown() {
         return escudoCoolDown;
     }
-    public void aumentarVida(int vida) {
+    public void setVida(int vida) {
     	this.vidaActual += vida;
     	if(this.vidaActual > this.vidaMaxima) {
     		this.vidaActual = this.vidaMaxima;
@@ -225,12 +224,6 @@ public class Jugador extends Entidad {
     }
     public Arma getArmaEquipada() { 
     	return armaEquipada; 
-    }
-    public float getShootTimer() {
-        return shootTimer;
-    }
-    public void setShootTimer(float shootTimer) {
-        this.shootTimer = shootTimer;
     }
     public Texture getArmaTextura() {
     	return armaEquipada.getArmaTextura();

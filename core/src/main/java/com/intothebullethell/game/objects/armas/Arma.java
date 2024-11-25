@@ -42,11 +42,11 @@ public abstract class Arma {
 
     public void recargar() {
         if (balasEnReserva > 0) {
-            int bulletsNeeded = capacidadMunicion - balasEnMunicion;
-            int bulletsToReload = Math.min(bulletsNeeded, balasEnReserva);
+            int balasNecesitadas = capacidadMunicion - balasEnMunicion;
+            int balasARecargar = Math.min(balasNecesitadas, balasEnReserva);
 
-            balasEnMunicion += bulletsToReload;
-            balasEnReserva -= bulletsToReload;
+            balasEnMunicion += balasARecargar;
+            balasEnReserva -= balasARecargar;
         }
     }
 

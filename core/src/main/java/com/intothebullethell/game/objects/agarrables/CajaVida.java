@@ -12,7 +12,7 @@ public class CajaVida extends Agarrable {
 
     @Override
     public void aplicarEfecto(Jugador jugador) {
-        jugador.aumentarVida(2); 
+        jugador.setVida(2); 
         this.efectoSonido.reproducirSonido();
         this.recogido = true; 
     }

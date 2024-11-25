@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.intothebullethell.game.objects.activos.Activo;
 import com.intothebullethell.game.objects.activos.Adrenalina;
+import com.intothebullethell.game.objects.activos.AnilloUnico;
 import com.intothebullethell.game.objects.activos.Sanguche;
 
 public class ActivoAleatorio {
@@ -18,6 +19,7 @@ public class ActivoAleatorio {
     private void inicializarObjetos() {
     	listaObjetos.add(new Adrenalina());
     	listaObjetos.add(new Sanguche());
+    	listaObjetos.add(new AnilloUnico());
     }
 
     public Activo obtenerActivoAleatorio() {

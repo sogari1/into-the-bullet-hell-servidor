@@ -8,7 +8,7 @@ import com.intothebullethell.game.managers.EntidadManager;
 
 public class EnemigoFuerte extends Enemigo {
 	public EnemigoFuerte(Jugador[] jugadores, EntidadManager entidadManager) {
-		super(RecursoRuta.SPRITE_SLIME_1, RecursoRuta.SPRITE_SLIME_2, 20, 18, 14f, 1, 100, jugadores, entidadManager);
+		super(RecursoRuta.SPRITE_SLIME_1, RecursoRuta.SPRITE_SLIME_2, 20, 15, 12f, 3, 180, jugadores, entidadManager);
 	}
 	@Override
 	public void atacar() {
