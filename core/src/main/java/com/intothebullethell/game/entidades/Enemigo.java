@@ -2,33 +2,42 @@ package com.intothebullethell.game.entidades;
 
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Vector2;
+import com.intothebullethell.game.globales.RecursoRuta;
 import com.intothebullethell.game.managers.EntidadManager;
-import com.intothebullethell.game.objects.objetos.Agarrable;
-import com.intothebullethell.game.objects.objetos.CajaMunicion;
-import com.intothebullethell.game.objects.objetos.CajaVida;
+import com.intothebullethell.game.objects.agarrables.Agarrable;
+import com.intothebullethell.game.objects.agarrables.CajaMunicion;
+import com.intothebullethell.game.objects.agarrables.CajaVida;
 
 public abstract class Enemigo extends Entidad {
+	private static final Texture[] PROYECTIL_TEXTURA = new Texture[]{RecursoRuta.PROYECTIL_ENEMIGO_1, RecursoRuta.PROYECTIL_ENEMIGO_2};
     protected Jugador[] jugadores;
     protected EntidadManager entidadManager;
-    
     protected float intervaloAtaque;
     protected float tiempoAtaque;
     protected float proyectilVelocidad;
     protected int daño;
     private final float PROBABILIDAD_DROP = 0.2f; 
+    private AnimacionEntidad animacionEnemigo;
 
-    public Enemigo(Texture texture, int vida, int velocidad, float intervaloAtaque, int daño, float proyectilVelocidad, Texture proyectilTextura, Jugador[] jugadores, EntidadManager entidadManager) {
-        super(texture, vida, velocidad, proyectilTextura);
+    public Enemigo(Texture sprite1, Texture sprite2, int vida, int velocidad, float intervaloAtaque, int daño, float proyectilVelocidad, Jugador[] jugadores, EntidadManager entidadManager) {
+        super(sprite1, vida, velocidad, PROYECTIL_TEXTURA[0]);
         this.jugadores = jugadores;
         this.intervaloAtaque = intervaloAtaque;
         this.tiempoAtaque = intervaloAtaque;
         this.daño = daño;
         this.proyectilVelocidad = proyectilVelocidad;
         this.entidadManager = entidadManager; 
+        
+        this.animacionEnemigo = new AnimacionEntidad(new Texture[]{sprite1, sprite2});
     }
-
+    @Override
+    public void draw(Batch batch) {
+        batch.draw(animacionEnemigo.actualizarAnimacionEntidad(Gdx.graphics.getDeltaTime()), getX(), getY(), getWidth(), getHeight());
+    }
     @Override
     public void update(float delta) {
         moverHaciaJugador(delta);
@@ -102,7 +111,12 @@ public abstract class Enemigo extends Entidad {
         }
         return null;
     }
-
+    public static Texture getProyectilTexturaUno() {
+		return PROYECTIL_TEXTURA[0];
+	}
+    public static Texture getProyectilTexturaDos() {
+		return PROYECTIL_TEXTURA[1];
+	}
     public abstract String getTipoEnemigo();
 	public String getTipoProyectil() {
 		return "Enemigo";

@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.intothebullethell.game.entidades.Enemigo;
 import com.intothebullethell.game.globales.NetworkData;
-import com.intothebullethell.game.objects.objetos.Agarrable;
+import com.intothebullethell.game.objects.agarrables.Agarrable;
 public class EnemigoManager {
 
     private List<Enemigo> enemigos = new ArrayList<>();

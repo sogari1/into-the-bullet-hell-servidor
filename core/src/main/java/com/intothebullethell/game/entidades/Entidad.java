@@ -53,10 +53,6 @@ public abstract class Entidad extends Sprite {
     public float getVelocidad() {
         return velocidad;
     }
-
-    public Texture getProyectilTextura() {
-        return proyectilTextura;
-    }
     public void setVelocidad(float velocidad) {
 		this.velocidad = velocidad;
 	}

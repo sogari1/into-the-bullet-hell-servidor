@@ -37,6 +37,9 @@ public class EntidadManager {
 	                multiplayerPantalla.incrementarRonda(); 
 	                temporizadorGeneracion = 0f; 
 	            }
+	            for(Jugador jugador : jugadores) {
+	    			jugador.reiniciarBengalas();
+	    		}
 	        } else {
 	            grupoEnemigos.update(delta);
 	        }

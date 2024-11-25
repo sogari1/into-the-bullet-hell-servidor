@@ -10,12 +10,13 @@ import com.intothebullethell.game.globales.SonidoRuta;
 
 public class Pistola extends Arma {
     public Pistola() {
-        super("Pistola", 300, 1, 0.2f, 10, 300, RecursoRuta.PROYECTIL_PISTOLA, RecursoRuta.ARMA_PISTOLA, SonidoRuta.DISPARIO_PISTOLA);
+        super("Pistola", 300, 1, 0.2f, 10, 80, RecursoRuta.PROYECTIL_PISTOLA, RecursoRuta.PROYECTIL_PISTOLA, RecursoRuta.ARMA_PISTOLA, SonidoRuta.DISPARO_PISTOLA);
     }
 
     @Override
     public void disparar(Vector2 position, Vector2 target, List<Proyectil> proyectiles) {
-        proyectiles.add(new Proyectil(proyectilTextura, position, target, proyectilVelocidad, daño, true));
-        NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" + getNombre() + "!" + position.x + "!" + position.y + "!" + proyectilVelocidad + "!" + daño + "!" + "true");
+        proyectiles.add(new Proyectil(proyectilTexturaUno, proyectilTexturaDos, position, target, proyectilVelocidad, daño, true, 10, 10));
+        NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" +  getNombre());
     }
+    
 }

@@ -8,7 +8,7 @@ import com.intothebullethell.game.managers.EntidadManager;
 
 public class EnemigoRapido extends Enemigo {
     public EnemigoRapido(Jugador[] jugadores, EntidadManager entidadManager) {
-        super(RecursoRuta.ENEMIGO, 10, 15, 10f, 1, 200, RecursoRuta.PROYECTIL_ENEMIGO, jugadores, entidadManager);
+        super(RecursoRuta.SPRITE_MEDUSA_1, RecursoRuta.SPRITE_MEDUSA_2, 10, 15, 10f, 1, 200, jugadores, entidadManager);
     }
     @Override
     public void atacar() {
@@ -17,8 +17,8 @@ public class EnemigoRapido extends Enemigo {
             Vector2 position = new Vector2(getX() + getWidth() / 2, getY() + getHeight() / 2);
             Vector2 target = new Vector2(jugadorObjetivo.getX() + jugadorObjetivo.getWidth() / 2, jugadorObjetivo.getY() + jugadorObjetivo.getHeight() / 2);
 
-            entidadManager.getGrupoProyectiles().agregarProyectil(new Proyectil(getProyectilTextura(), position, target, proyectilVelocidad, daño, false)); 
-            NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" + getTipoProyectil() + "!" + position.x + "!" + position.y + "!" + proyectilVelocidad + "!" + daño + "!" + "false");
+            entidadManager.getGrupoProyectiles().agregarProyectil(new Proyectil(getProyectilTexturaUno(), getProyectilTexturaDos(), position, target, proyectilVelocidad, daño, false, 3, 3)); 
+            NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" + getTipoProyectil());
         }
     }
     @Override

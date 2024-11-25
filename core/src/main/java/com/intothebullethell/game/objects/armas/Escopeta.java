@@ -10,7 +10,7 @@ import com.intothebullethell.game.globales.SonidoRuta;
 
 public class Escopeta extends Arma {
     public Escopeta() {
-        super("Escopeta", 280, 3, 0.8f, 8, 64, RecursoRuta.PROYECTIL_ESCOPETA, RecursoRuta.ARMA_ESCOPETA, SonidoRuta.DISPARIO_ESCOPETA);
+        super("Escopeta", 280, 3, 0.8f, 8, 32, RecursoRuta.PROYECTIL_ESCOPETA, RecursoRuta.PROYECTIL_ESCOPETA, RecursoRuta.ARMA_ESCOPETA, SonidoRuta.DISPARO_ESCOPETA);
     }
 
     @Override
@@ -21,8 +21,8 @@ public class Escopeta extends Arma {
             Vector2 spreadDirection = new Vector2(direction).rotateDeg(i * 5); 
             Vector2 spreadTarget = new Vector2(position).add(spreadDirection.scl(1000));
             
-            proyectiles.add(new Proyectil(proyectilTextura, position, spreadTarget, proyectilVelocidad, daño, true));
-            NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" + getNombre() + "!" + position.x + "!" + position.y + "!" + proyectilVelocidad + "!" + daño + "!" + "true");
+            proyectiles.add(new Proyectil(proyectilTexturaUno, proyectilTexturaDos, position, spreadTarget, proyectilVelocidad, daño, true, 3, 3));
+            NetworkData.serverThread.enviarMensajeATodos("proyectil!crear!" + getNombre());
         }
     }
 }

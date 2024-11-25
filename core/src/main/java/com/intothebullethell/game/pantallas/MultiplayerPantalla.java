@@ -64,8 +64,8 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 	}
     private void crearJugadores() {
     	for (int i = 0; i < NUM_JUGADORES; i++) {
-			jugadores[i] = new Jugador(i, RecursoRuta.SPRITE_ABAJO, RecursoRuta.SPRITE_ARRIBA,  RecursoRuta.SPRITE_ABAJO, RecursoRuta.SPRITE_IZQUIERDA,  RecursoRuta.SPRITE_DERECHA, camara, inputManager, entidadManager);
-			 this.jugadores[i].setPosition((15 + (i*2)) * tileCollisionManager.collisionLayer.getTileWidth(), 15 * tileCollisionManager.collisionLayer.getTileHeight());
+			jugadores[i] = new Jugador(i, RecursoRuta.SPRITE_ABAJO_1, camara, inputManager, entidadManager);
+			 this.jugadores[i].setPosition((20 + (i*2)) * tileCollisionManager.collisionLayer.getTileWidth(), 50 * tileCollisionManager.collisionLayer.getTileHeight());
 		}
     }
     private void inicializarTextos() {
@@ -153,7 +153,6 @@ public class MultiplayerPantalla implements Screen, NetworkActionsListener {
 	}
 	@Override
 	 public void dispose() {
-		NetworkData.serverThread.enviarMensajeATodos("servidorapagado!El servidor se ha apagado");
         NetworkData.serverThread.end();
         tiempo.detener();
     }

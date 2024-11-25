@@ -190,6 +190,7 @@ public class ServerThread extends Thread{
 	  }
 
 	  public void end(){
+		  enviarMensajeATodos("servidorapagado!El servidor se ha apagado");
 		  this.end = true;
 		  this.socket.close();
 		  System.out.println("Hilo servidor detenido.");

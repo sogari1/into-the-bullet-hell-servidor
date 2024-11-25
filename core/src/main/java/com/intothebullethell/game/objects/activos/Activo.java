@@ -50,6 +50,7 @@ public abstract class Activo {
                 try {
                     Thread.sleep((long) (tiempoDeUso * 1000)); 
                     revertirEfecto(jugador); 
+                    usado = false;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

@@ -1,4 +1,4 @@
-package com.intothebullethell.game.objects.objetos;
+package com.intothebullethell.game.objects.agarrables;
 
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.globales.RecursoRuta;

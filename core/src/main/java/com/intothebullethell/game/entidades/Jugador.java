@@ -20,10 +20,11 @@ public class Jugador extends Entidad {
 	private Bengala bengala = new Bengala();
     private ArmaAleatoria armaAleatoria = new ArmaAleatoria();
     private ActivoAleatorio activoAleatorio = new ActivoAleatorio();
+    private AnimacionEntidad animacionJugador = new AnimacionEntidad();;
     private Arma armaEquipada;
     private Activo activoEquipado;
-    private TextureRegion upSprite, downSprite, leftSprite, rightSprite;
     private EntidadManager entidadManager;
+    
     public OrthographicCamera camara;
     
     private float shootTimer = 0;
@@ -31,16 +32,13 @@ public class Jugador extends Entidad {
     private float escudoCoolDown = 0;
     private final float escudoCoolDownMaximo = 2.5f; 
     private boolean disparando = false;
+    private boolean moviendose = false;
     private int mouseX, mouseY;
     
     private int numeroJugador;
 
-    public Jugador(int numeroJugador, TextureRegion sprite, TextureRegion upSprite, TextureRegion downSprite, TextureRegion leftSprite, TextureRegion rightSprite, OrthographicCamera camara, InputManager inputManager, EntidadManager entidadManager) {
+    public Jugador(int numeroJugador, TextureRegion sprite, OrthographicCamera camara, InputManager inputManager, EntidadManager entidadManager) {
     	super(sprite.getTexture(), 20, 150, null);
-        this.upSprite = upSprite;
-        this.downSprite = downSprite;
-        this.leftSprite = leftSprite;
-        this.rightSprite = rightSprite;
         this.camara = camara;
         this.entidadManager = entidadManager;
         this.numeroJugador = numeroJugador;
@@ -70,28 +68,37 @@ public class Jugador extends Entidad {
     }
 
     private void actualizarMovimiento() {
-        mover(velocity);
-        if(GameData.juegoEstado.equals(JuegoEstado.JUGANDO)){
+    	if(GameData.juegoEstado.equals(JuegoEstado.JUGANDO)){
+    		this.moviendose = true;
+    		mover(velocity);
         	NetworkData.serverThread.enviarMensajeATodos("jugador!mover!" + this.numeroJugador + "!" + getX() + "!" + getY());
         }
     }
     public void actualizarDireccion(String region) {
-    	switch(region) {
-    	case "arriba":
-    		setRegion(upSprite);
-    		break;
-    	case "abajo":
-    		setRegion(downSprite);
-    		break;
-    	case "izquierda":
-    		setRegion(leftSprite);
-    		break;
-    	case "derecha":
-    		setRegion(rightSprite);
-    		break;
-    	}
-    	NetworkData.serverThread.enviarMensajeATodos("jugador!direccion!" + this.numeroJugador + "!" + region);
+        if (velocity.x != 0 || velocity.y != 0) {
+            animacionJugador.actualizarAnimacionJugador(this, region);
+            NetworkData.serverThread.enviarMensajeATodos("jugador!direccion!" + this.numeroJugador + "!" + region + "!" + this.moviendose);
+        } else {
+        	this.moviendose = false;
+            switch (region) {
+                case "arriba":
+                    setRegion(animacionJugador.getJugadorAnimacionesArribaUno());
+                    break;
+                case "abajo":
+                    setRegion(animacionJugador.getJugadorAnimacionesAbajoUno());
+                    break;
+                case "izquierda":
+                    setRegion(animacionJugador.getJugadorAnimacionesIzquierdaUno());
+                    break;
+                case "derecha":
+                    setRegion(animacionJugador.getJugadorAnimacionesDerechaUno());
+                    break;
+            }
+            NetworkData.serverThread.enviarMensajeATodos("jugador!direccion!" + this.numeroJugador + "!" + region + "!" + this.moviendose);
+        }
     }
+
+
     public void moverArriba() {
         velocity.y = velocidad;
     }
@@ -136,6 +143,7 @@ public class Jugador extends Entidad {
     		opacidad = 1.0f;
     	}
     	setColor(1.0f, 1.0f, 1.0f, opacidad); 
+    	NetworkData.serverThread.enviarMensajeATodos("jugador!opacidad!" + this.numeroJugador + "!" + this.opacidad);
     }
     private void manejarDisparos(float delta) {
         if (isDisparando() && GameData.juegoEstado.equals(JuegoEstado.JUGANDO) && armaEquipada != null) {
@@ -156,7 +164,10 @@ public class Jugador extends Entidad {
     	}
     }
     public void usarBengala() {
-    	bengala.usar(entidadManager);
+    	this.bengala.usar(entidadManager);
+    }
+    public void reiniciarBengalas() {
+    	this.bengala.reiniciarUsos();
     }
     public void usarActivo() {
     	if(activoEquipado != null) {

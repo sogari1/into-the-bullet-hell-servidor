@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.intothebullethell.game.entidades.Jugador;
 import com.intothebullethell.game.globales.NetworkData;
-import com.intothebullethell.game.objects.objetos.Agarrable;
+import com.intothebullethell.game.objects.agarrables.Agarrable;
 public class AgarrableManager {
 	
 	private List<Agarrable> agarrables = new ArrayList<>();
